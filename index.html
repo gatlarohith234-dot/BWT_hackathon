@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="navy-gold">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#102a43" />
+<title>Tailor Order Manager</title>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23102a43'/%3E%3Cpath d='M10 8 L16 14 L22 8' stroke='%23e8a84e' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M16 14 L16 24' stroke='%23e8a84e' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='26' r='1.5' fill='%23e8a84e'/%3E%3C/svg%3E" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy: {
+            50:  'rgb(var(--navy-50) / <alpha-value>)',
+            100: 'rgb(var(--navy-100) / <alpha-value>)',
+            200: 'rgb(var(--navy-200) / <alpha-value>)',
+            300: 'rgb(var(--navy-300) / <alpha-value>)',
+            400: 'rgb(var(--navy-400) / <alpha-value>)',
+            500: 'rgb(var(--navy-500) / <alpha-value>)',
+            600: 'rgb(var(--navy-600) / <alpha-value>)',
+            700: 'rgb(var(--navy-700) / <alpha-value>)',
+            800: 'rgb(var(--navy-800) / <alpha-value>)',
+            900: 'rgb(var(--navy-900) / <alpha-value>)',
+            950: 'rgb(var(--navy-950) / <alpha-value>)',
+          },
+          gold: {
+            50:  'rgb(var(--gold-50) / <alpha-value>)',
+            100: 'rgb(var(--gold-100) / <alpha-value>)',
+            200: 'rgb(var(--gold-200) / <alpha-value>)',
+            300: 'rgb(var(--gold-300) / <alpha-value>)',
+            400: 'rgb(var(--gold-400) / <alpha-value>)',
+            500: 'rgb(var(--gold-500) / <alpha-value>)',
+            600: 'rgb(var(--gold-600) / <alpha-value>)',
+            700: 'rgb(var(--gold-700) / <alpha-value>)',
+          },
+        },
+        fontFamily: { sans: ['Inter','system-ui','-apple-system','sans-serif'] },
+        boxShadow: {
+          soft:'0 1px 3px 0 rgba(0,0,0,0.06), 0 1px 2px -1px rgba(0,0,0,0.06)',
+          card:'0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04)',
+          elevated:'0 4px 6px -1px rgba(0,0,0,0.07), 0 10px 20px -5px rgba(0,0,0,0.06)',
+        },
+      },
+    },
+  };
+</script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+<script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
+<style>
+  /* ============================================================
+     THEME DEFINITIONS — 10 themes (5 light, 5 dark)
+     ============================================================ */
+
+  /* 1. NAVY GOLD (default, light) */
+  [data-theme="navy-gold"] {
+    --navy-50: 240 244 248; --navy-100: 217 226 236; --navy-200: 188 204 220;
+    --navy-300: 159 179 200; --navy-400: 130 154 177; --navy-500: 98 125 152;
+    --navy-600: 72 101 129; --navy-700: 51 78 104; --navy-800: 36 59 83;
+    --navy-900: 16 42 67; --navy-950: 10 25 41;
+    --gold-50: 253 248 240; --gold-100: 250 236 214; --gold-200: 245 217 173;
+    --gold-300: 239 192 122; --gold-400: 232 168 78; --gold-500: 217 142 43;
+    --gold-600: 184 114 32; --gold-700: 146 88 28;
+    --card-bg: 255 255 255; --input-bg: 255 255 255; --is-dark: 0;
+  }
+
+  /* 2. MIDNIGHT PURPLE (dark) */
+  [data-theme="midnight-purple"] {
+    --navy-50: 15 15 25; --navy-100: 26 26 46; --navy-200: 45 45 75;
+    --navy-300: 70 70 105; --navy-400: 120 120 160; --navy-500: 160 160 200;
+    --navy-600: 190 190 220; --navy-700: 215 215 240; --navy-800: 232 232 248;
+    --navy-900: 245 245 255; --navy-950: 8 8 15;
+    --gold-50: 60 45 100; --gold-100: 90 70 140; --gold-200: 130 105 190;
+    --gold-300: 167 139 250; --gold-400: 190 170 255; --gold-500: 139 92 246;
+    --gold-600: 115 70 220; --gold-700: 90 50 180;
+    --card-bg: 26 26 46; --input-bg: 26 26 46; --is-dark: 1;
+  }
+
+  /* 3. FOREST (dark green) */
+  [data-theme="forest"] {
+    --navy-50: 10 20 15; --navy-100: 20 35 25; --navy-200: 32 55 40;
+    --navy-300: 55 85 65; --navy-400: 110 145 120; --navy-500: 155 185 165;
+    --navy-600: 185 215 195; --navy-700: 210 232 218; --navy-800: 228 244 235;
+    --navy-900: 242 252 246; --navy-950: 5 12 8;
+    --gold-50: 20 50 30; --gold-100: 30 80 50; --gold-200: 50 130 80;
+    --gold-300: 74 222 128; --gold-400: 110 240 160; --gold-500: 34 197 94;
+    --gold-600: 22 163 74; --gold-700: 15 130 60;
+    --card-bg: 20 35 25; --input-bg: 20 35 25; --is-dark: 1;
+  }
+
+  /* 4. CHARCOAL (dark gray + orange) */
+  [data-theme="charcoal"] {
+    --navy-50: 15 15 15; --navy-100: 30 30 30; --navy-200: 50 50 50;
+    --navy-300: 75 75 75; --navy-400: 120 120 120; --navy-500: 160 160 160;
+    --navy-600: 190 190 190; --navy-700: 215 215 215; --navy-800: 232 232 232;
+    --navy-900: 245 245 245; --navy-950: 8 8 8;
+    --gold-50: 60 30 10; --gold-100: 90 45 15; --gold-200: 140 70 20;
+    --gold-300: 249 115 22; --gold-400: 251 146 60; --gold-500: 234 88 12;
+    --gold-600: 200 75 10; --gold-700: 160 60 8;
+    --card-bg: 30 30 30; --input-bg: 30 30 30; --is-dark: 1;
+  }
+
+  /* 5. SLATE DARK (dark blue-gray) */
+  [data-theme="slate-dark"] {
+    --navy-50: 15 23 42; --navy-100: 30 41 59; --navy-200: 51 65 85;
+    --navy-300: 71 85 105; --navy-400: 100 116 139; --navy-500: 148 163 184;
+    --navy-600: 180 195 215; --navy-700: 210 220 235; --navy-800: 230 235 245;
+    --navy-900: 242 246 252; --navy-950: 10 15 30;
+    --gold-50: 20 50 80; --gold-100: 30 80 120; --gold-200: 40 120 180;
+    --gold-300: 125 211 252; --gold-400: 180 225 255; --gold-500: 56 189 248;
+    --gold-600: 14 165 233; --gold-700: 8 130 190;
+    --card-bg: 30 41 59; --input-bg: 30 41 59; --is-dark: 1;
+  }
+
+  /* 6. OCEAN (light blue) */
+  [data-theme="ocean"] {
+    --navy-50: 240 249 255; --navy-100: 224 242 254; --navy-200: 186 230 253;
+    --navy-300: 125 195 240; --navy-400: 96 165 250; --navy-500: 59 130 246;
+    --navy-600: 37 99 235; --navy-700: 29 78 216; --navy-800: 30 64 175;
+    --navy-900: 15 35 100; --navy-950: 10 25 70;
+    --gold-50: 255 250 235; --gold-100: 254 243 199; --gold-200: 253 230 138;
+    --gold-300: 252 211 77; --gold-400: 251 191 36; --gold-500: 245 158 11;
+    --gold-600: 217 119 6; --gold-700: 180 90 5;
+    --card-bg: 255 255 255; --input-bg: 255 255 255; --is-dark: 0;
+  }
+
+  /* 7. CREAM (light warm) */
+  [data-theme="cream"] {
+    --navy-50: 254 252 245; --navy-100: 250 245 230; --navy-200: 240 230 210;
+    --navy-300: 220 200 170; --navy-400: 180 150 120; --navy-500: 140 110 80;
+    --navy-600: 100 75 55; --navy-700: 75 55 40; --navy-800: 50 35 25;
+    --navy-900: 40 25 15; --navy-950: 20 12 8;
+    --gold-50: 255 248 230; --gold-100: 255 240 200; --gold-200: 250 220 160;
+    --gold-300: 240 190 110; --gold-400: 220 160 80; --gold-500: 200 130 50;
+    --gold-600: 170 100 30; --gold-700: 140 80 20;
+    --card-bg: 255 255 255; --input-bg: 255 255 255; --is-dark: 0;
+  }
+
+  /* 8. ROSE (light pink) */
+  [data-theme="rose"] {
+    --navy-50: 255 245 250; --navy-100: 255 228 240; --navy-200: 255 200 220;
+    --navy-300: 240 160 190; --navy-400: 220 120 160; --navy-500: 200 90 130;
+    --navy-600: 160 60 100; --navy-700: 120 40 75; --navy-800: 80 25 50;
+    --navy-900: 50 15 30; --navy-950: 30 8 18;
+    --gold-50: 255 235 245; --gold-100: 255 210 230; --gold-200: 255 175 205;
+    --gold-300: 251 113 133; --gold-400: 250 150 165; --gold-500: 244 63 94;
+    --gold-600: 225 29 72; --gold-700: 190 20 55;
+    --card-bg: 255 255 255; --input-bg: 255 255 255; --is-dark: 0;
+  }
+
+  /* 9. EMERALD (light green) */
+  [data-theme="emerald"] {
+    --navy-50: 240 253 244; --navy-100: 220 252 231; --navy-200: 187 247 208;
+    --navy-300: 134 220 165; --navy-400: 74 200 128; --navy-500: 34 180 90;
+    --navy-600: 22 150 70; --navy-700: 21 118 55; --navy-800: 22 90 48;
+    --navy-900: 20 75 40; --navy-950: 5 40 20;
+    --gold-50: 255 252 230; --gold-100: 254 249 195; --gold-200: 253 240 130;
+    --gold-300: 250 220 90; --gold-400: 245 200 60; --gold-500: 234 179 8;
+    --gold-600: 202 138 4; --gold-700: 160 105 3;
+    --card-bg: 255 255 255; --input-bg: 255 255 255; --is-dark: 0;
+  }
+
+  /* 10. LAVENDER (light purple) */
+  [data-theme="lavender"] {
+    --navy-50: 250 245 255; --navy-100: 243 232 255; --navy-200: 233 213 255;
+    --navy-300: 216 180 254; --navy-400: 192 132 252; --navy-500: 168 85 247;
+    --navy-600: 147 51 234; --navy-700: 126 34 206; --navy-800: 107 33 168;
+    --navy-900: 88 28 135; --navy-950: 55 15 90;
+    --gold-50: 255 240 250; --gold-100: 255 220 240; --gold-200: 255 180 220;
+    --gold-300: 244 114 182; --gold-400: 240 140 195; --gold-500: 236 72 153;
+    --gold-600: 219 39 119; --gold-700: 180 25 95;
+    --card-bg: 255 255 255; --input-bg: 255 255 255; --is-dark: 0;
+  }
+
+  /* ============================================================
+     BASE STYLES
+     ============================================================ */
+  html, body { height: 100%; transition: background 0.2s; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: rgb(var(--navy-50));
+    color: rgb(var(--navy-900));
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+  }
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width:8px; height:8px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background: rgb(var(--navy-300)); border-radius:9999px; }
+
+  #boot-loader {
+    position: fixed; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 1rem;
+    background: rgb(var(--navy-50)); z-index: 9999; font-family: 'Inter', sans-serif;
+  }
+  .boot-spinner {
+    width: 2.5rem; height: 2.5rem; border: 3px solid rgb(var(--navy-200));
+    border-top-color: rgb(var(--navy-700)); border-radius: 50%;
+    animation: bootSpin 0.8s linear infinite;
+  }
+  @keyframes bootSpin { to { transform: rotate(360deg); } }
+
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; border-radius:.5rem; padding:.625rem 1rem; font-size:.875rem; font-weight:500; line-height:1; transition:all .15s; cursor:pointer; border:1px solid transparent; text-decoration:none; white-space:nowrap; font-family:inherit; }
+  .btn:focus { outline:none; box-shadow:0 0 0 3px rgba(16,42,67,.15); }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
+  .btn-primary { background: rgb(var(--navy-900)); color: #fff; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .btn-primary:hover:not(:disabled) { background: rgb(var(--navy-800)); }
+  [data-dark="1"] .btn-primary { color: rgb(var(--navy-50)); }
+  .btn-gold { background: rgb(var(--gold-500)); color:#fff; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .btn-gold:hover:not(:disabled) { background: rgb(var(--gold-600)); }
+  .btn-outline { background: rgb(var(--card-bg)); border-color: rgb(var(--navy-200)); color: rgb(var(--navy-700)); }
+  .btn-outline:hover:not(:disabled) { background: rgb(var(--navy-100)); }
+  .btn-ghost { background:transparent; color: rgb(var(--navy-600)); }
+  .btn-ghost:hover:not(:disabled) { background: rgb(var(--navy-100)); }
+  .btn-danger { background:#dc2626; color:#fff; }
+  .btn-danger:hover:not(:disabled) { background:#b91c1c; }
+  .btn-sm { padding:.4rem .7rem; font-size:.75rem; }
+
+  .input { width:100%; border-radius:.5rem; border:1px solid rgb(var(--navy-200)); background: rgb(var(--input-bg)); padding:.625rem .875rem; font-size:.875rem; color: rgb(var(--navy-900)); transition:all .15s; font-family:inherit; }
+  .input::placeholder { color: rgb(var(--navy-400)); }
+  .input:focus { outline:none; border-color: rgb(var(--navy-500)); box-shadow:0 0 0 3px rgba(98,125,152,.2); }
+  .label { display:block; font-size:.875rem; font-weight:500; color: rgb(var(--navy-700)); margin-bottom:.375rem; }
+
+  .card { border-radius:.75rem; border:1px solid rgb(var(--navy-200) / 0.7); background: rgb(var(--card-bg)); padding:1.25rem; box-shadow:0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.04); }
+
+  /* Dark theme overrides for bg-white and similar */
+  [data-dark="1"] .bg-white { background-color: rgb(var(--card-bg)) !important; }
+  [data-dark="1"] .text-navy-900 { color: rgb(var(--navy-900)); }
+  [data-dark="1"] .divide-navy-50 > * + * { border-color: rgb(var(--navy-200)); }
+
+  .badge { display:inline-flex; align-items:center; gap:.25rem; border-radius:9999px; padding:.125rem .625rem; font-size:.7rem; font-weight:600; border:1px solid transparent; }
+
+  @keyframes slideIn { from { transform:translateY(10px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .anim-in { animation:slideIn .2s ease-out; }
+  .anim-fade { animation:fadeIn .15s ease-out; }
+  .spinner { display:inline-block; width:2rem; height:2rem; border:3px solid rgb(var(--navy-200)); border-top-color: rgb(var(--navy-700)); border-radius:50%; animation:spin .7s linear infinite; }
+
+  @media print {
+    body * { visibility:hidden !important; }
+    .print-area, .print-area * { visibility:visible !important; }
+    .print-area { position:absolute !important; left:0 !important; top:0 !important; width:100% !important; padding:0 !important; margin:0 !important; border:none !important; box-shadow:none !important; }
+    .no-print { display:none !important; }
+    @page { margin:10mm; size:A5; }
+  }
+  .kanban-scroll { overflow-x:auto; overflow-y:hidden; }
+  .kanban-scroll::-webkit-scrollbar { height:6px; }
+  .drag-over { background: rgba(232,168,78,.1) !important; box-shadow: inset 0 0 0 2px rgb(var(--gold-400)); }
+  .dragging { opacity:.4; }
+</style>
+</head>
+
+<body>
+<div id="root">
+  <div id="boot-loader">
+    <div class="boot-spinner"></div>
+    <p style="color: rgb(var(--navy-500)); font-size:14px; font-weight:500;">Loading Tailor Order Manager…</p>
+  </div>
+</div>
+
+<script>
+  (function() {
+    function showError(msg) {
+      var root = document.getElementById('root');
+      if (!root) return;
+      root.innerHTML =
+        '<div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem; background:#f0f4f8; font-family:Inter,system-ui,sans-serif;">' +
+          '<div style="max-width:560px; background:#fff; border:1px solid #fecaca; border-radius:16px; padding:2rem; box-shadow:0 10px 30px rgba(0,0,0,.08);">' +
+            '<h2 style="margin:0 0 1rem 0;font-size:18px;color:#dc2626;">Something went wrong</h2>' +
+            '<pre style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:12px;color:#334e68;overflow:auto;max-height:240px;white-space:pre-wrap;word-break:break-word;">' + String(msg).replace(/</g,'&lt;') + '</pre>' +
+          '</div>' +
+        '</div>';
+    }
+    window.addEventListener('error', function(e) { showError((e.message || 'Unknown error') + (e.filename ? '\n' + e.filename + ':' + e.lineno : '')); });
+    window.addEventListener('unhandledrejection', function(e) { showError('Promise rejection: ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason))); });
+  })();
+</script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useCallback, useRef, createContext, useContext, Fragment } = React;
+
+/* ============================================================
+   ============ CONFIGURE YOUR SUPABASE HERE ==================
+   ============================================================ */
+const SUPABASE_URL      = 'PASTE_YOUR_URL_HERE';
+const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
+/* ============================================================ */
+
+let supabase = null;
+let supabaseInitError = null;
+try {
+  if (window.supabase && typeof window.supabase.createClient === 'function') {
+    if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL.indexOf('PASTE_') === -1) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  } else {
+    supabaseInitError = 'Supabase SDK failed to load. Check your internet connection.';
+  }
+} catch (e) { supabaseInitError = e.message || String(e); }
+
+/* ============================================================
+   THEME SYSTEM
+   ============================================================ */
+const THEMES = [
+  { id:'navy-gold',        name:'Navy Gold',      mode:'light', swatch:['#102a43','#d98e2b'] },
+  { id:'ocean',            name:'Ocean',          mode:'light', swatch:['#3b82f6','#f59e0b'] },
+  { id:'cream',            name:'Cream',          mode:'light', swatch:['#faf5e6','#c8823c'] },
+  { id:'rose',             name:'Rose',           mode:'light', swatch:['#f43f5e','#fb7185'] },
+  { id:'emerald',          name:'Emerald',        mode:'light', swatch:['#16a34a','#eab308'] },
+  { id:'lavender',         name:'Lavender',       mode:'light', swatch:['#9333ea','#ec4899'] },
+  { id:'midnight-purple',  name:'Midnight Purple',mode:'dark',  swatch:['#1a1a2e','#8b5cf6'] },
+  { id:'forest',           name:'Forest',         mode:'dark',  swatch:['#142319','#22c55e'] },
+  { id:'charcoal',         name:'Charcoal',       mode:'dark',  swatch:['#1e1e1e','#ea580c'] },
+  { id:'slate-dark',       name:'Slate Dark',     mode:'dark',  swatch:['#1e293b','#38bdf8'] },
+];
+
+function applyTheme(id) {
+  const theme = THEMES.find(t => t.id === id) || THEMES[0];
+  document.documentElement.setAttribute('data-theme', theme.id);
+  document.documentElement.setAttribute('data-dark', theme.mode === 'dark' ? '1' : '0');
+  try { localStorage.setItem('tailor_theme', theme.id); } catch (e) {}
+}
+
+function ThemeSwitcher({ compact = false }) {
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState(() => {
+    try { return localStorage.getItem('tailor_theme') || 'navy-gold'; } catch (e) { return 'navy-gold'; }
+  });
+  const ref = useRef(null);
+
+  useEffect(() => {
+    applyTheme(current);
+  }, [current]);
+
+  useEffect(() => {
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, []);
+
+  const pick = (id) => { setCurrent(id); setOpen(false); };
+  const active = THEMES.find(t => t.id === current) || THEMES[0];
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 rounded-lg border border-navy-200 bg-white px-3 py-2 text-sm font-medium text-navy-700 hover:bg-navy-100 transition-colors"
+        title="Change theme"
+      >
+        <Icon name="Palette" size={16} />
+        {!compact && <span className="hidden sm:inline">{active.name}</span>}
+        <div className="flex -space-x-1">
+          <span className="h-3 w-3 rounded-full border border-white" style={{ background: active.swatch[0] }} />
+          <span className="h-3 w-3 rounded-full border border-white" style={{ background: active.swatch[1] }} />
+        </div>
+      </button>
+      {open && (
+        <div className="absolute right-0 z-40 mt-2 w-64 overflow-hidden rounded-xl border border-navy-200 bg-white py-2 shadow-elevated anim-in">
+          <p className="px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-navy-400">Choose a theme</p>
+          {THEMES.map(t => (
+            <button
+              key={t.id}
+              onClick={() => pick(t.id)}
+              className="flex w-full items-center gap-3 px-3.5 py-2 text-left text-sm text-navy-700 transition-colors hover:bg-navy-50"
+            >
+              <div className="flex -space-x-1.5">
+                <span className="h-5 w-5 rounded-full border-2 border-white shadow-soft" style={{ background: t.swatch[0] }} />
+                <span className="h-5 w-5 rounded-full border-2 border-white shadow-soft" style={{ background: t.swatch[1] }} />
+              </div>
+              <span className="flex-1 font-medium">{t.name}</span>
+              {t.mode === 'dark' && <Icon name="Moon" size={13} className="text-navy-400" />}
+              {t.mode === 'light' && <Icon name="Sun" size={13} className="text-navy-400" />}
+              {t.id === current && <Icon name="Check" size={14} className="text-gold-500" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================
+   ICON
+   ============================================================ */
+function Icon({ name, size = 16, className = '', strokeWidth = 2 }) {
+  const lib = window.lucide && (window.lucide.icons || window.lucide);
+  if (!lib) return <span style={{ display:'inline-block', width:size, height:size }} />;
+  const node = lib[name] || lib[name.charAt(0).toUpperCase() + name.slice(1)];
+  if (!node) return <span style={{ display:'inline-block', width:size, height:size }} />;
+  if (Array.isArray(node)) {
+    const children = node[2] || [];
+    try {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" strokeWidth={strokeWidth}
+          strokeLinecap="round" strokeLinejoin="round" className={className}>
+          {children.map((c, i) => React.createElement(c[0], { key: i, ...(c[1] || {}) }))}
+        </svg>
+      );
+    } catch (e) { return <span style={{ display:'inline-block', width:size, height:size }} />; }
+  }
+  return <span style={{ display:'inline-block', width:size, height:size }} />;
+}
+
+/* ============================================================
+   CONSTANTS
+   ============================================================ */
+const STAGES = ['Received','Cutting','Stitching','Ready','Delivered'];
+const GARMENTS = ['Shirt','Pant','Blouse','Kurta','Suit','Lehenga','Dress','Alteration','Other'];
+const FABRICS = ['Cotton','Silk','Linen','Polyester','Wool','Denim','Rayon'];
+
+const STAGE_STYLES = {
+  Received:  { bg:'bg-blue-50',    text:'text-blue-700',    border:'border-blue-200',    dot:'bg-blue-500' },
+  Cutting:   { bg:'bg-amber-50',   text:'text-amber-700',   border:'border-amber-200',   dot:'bg-amber-500' },
+  Stitching: { bg:'bg-purple-50',  text:'text-purple-700',  border:'border-purple-200',  dot:'bg-purple-500' },
+  Ready:     { bg:'bg-emerald-50', text:'text-emerald-700', border:'border-emerald-200', dot:'bg-emerald-500' },
+  Delivered: { bg:'bg-navy-100',   text:'text-navy-600',    border:'border-navy-200',    dot:'bg-navy-500' },
+};
+
+const MEASUREMENT_FIELDS = [
+  { key:'chest',        label:'Chest' },
+  { key:'waist',        label:'Waist' },
+  { key:'hip',          label:'Hip' },
+  { key:'shoulder',     label:'Shoulder' },
+  { key:'shirtLength',  label:'Shirt Length' },
+  { key:'sleeveLength', label:'Sleeve Length' },
+  { key:'neck',         label:'Neck' },
+  { key:'pantLength',   label:'Pant Length' },
+  { key:'thigh',        label:'Thigh' },
+  { key:'knee',         label:'Knee' },
+  { key:'bottom',       label:'Bottom' },
+];
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function formatCurrency(v) { return '₹' + (Number(v) || 0).toLocaleString('en-IN', { maximumFractionDigits:0 }); }
+function formatDate(d) {
+  if (!d) return '—';
+  const dt = typeof d === 'string' && d.length === 10 ? new Date(d + 'T00:00:00') : new Date(d);
+  if (isNaN(dt)) return '—';
+  return dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+}
+function formatDateTime(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  if (isNaN(dt)) return '—';
+  return dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function todayStr() { const d = new Date(); d.setHours(0,0,0,0); return d.toISOString().split('T')[0]; }
+function addDaysStr(n) { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; }
+function initials(name) { if (!name) return '?'; return name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase(); }
+function greeting() { const h = new Date().getHours(); if (h < 12) return 'Good Morning'; if (h < 17) return 'Good Afternoon'; return 'Good Evening'; }
+function getDueInfo(deliveryDate, stage) {
+  if (stage === 'Delivered') return { label:'Delivered', color:'green', severity:'done' };
+  if (!deliveryDate) return { label:'No date', color:'slate', severity:'future' };
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due = new Date(deliveryDate + 'T00:00:00');
+  const diff = Math.ceil((due - today) / 86400000);
+  if (diff < 0) return { label:'Overdue ' + Math.abs(diff) + 'd', color:'red', severity:'overdue', days:Math.abs(diff) };
+  if (diff === 0) return { label:'Due Today', color:'amber', severity:'today', days:0 };
+  if (diff <= 3) return { label:'Due in ' + diff + 'd', color:'orange', severity:'soon', days:diff };
+  return { label:'Due in ' + diff + 'd', color:'slate', severity:'future', days:diff };
+}
+function buildWhatsAppLink(phone, message) {
+  const clean = String(phone || '').replace(/\D/g, '');
+  const full = clean.length === 10 ? '91' + clean : clean;
+  return 'https://wa.me/' + full + '?text=' + encodeURIComponent(message);
+}
+
+/* ============================================================
+   SMALL UI
+   ============================================================ */
+function Toast({ toast, onClose }) {
+  const styles = {
+    success: { bg:'bg-emerald-600', icon:'CheckCircle' },
+    error:   { bg:'bg-red-600',     icon:'XCircle' },
+    info:    { bg:'bg-navy-700',    icon:'Info' },
+  };
+  const s = styles[toast.type] || styles.info;
+  return (
+    <div className={'flex items-start gap-3 rounded-xl ' + s.bg + ' px-4 py-3.5 text-white shadow-elevated anim-in'}>
+      <Icon name={s.icon} size={18} className="mt-0.5 shrink-0" />
+      <p className="flex-1 text-sm font-medium leading-snug">{toast.message}</p>
+      <button onClick={onClose} className="shrink-0 rounded-md p-0.5 text-white/80 hover:text-white"><Icon name="X" size={16} /></button>
+    </div>
+  );
+}
+
+function Modal({ open, onClose, title, children, size = 'md' }) {
+  useEffect(() => {
+    if (open) document.body.style.overflow = 'hidden'; else document.body.style.overflow = '';
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+  if (!open) return null;
+  const sizes = { sm:'max-w-md', md:'max-w-lg', lg:'max-w-2xl', xl:'max-w-4xl' };
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+      <div className="absolute inset-0 bg-navy-950/40 backdrop-blur-sm anim-fade" onClick={onClose} />
+      <div className={'relative z-10 w-full ' + sizes[size] + ' max-h-[92vh] overflow-y-auto rounded-t-2xl bg-white shadow-elevated sm:rounded-2xl anim-in'}>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-navy-100 bg-white px-5 py-4 sm:px-6">
+          <h2 className="text-base font-semibold text-navy-900">{title}</h2>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-navy-400 hover:bg-navy-100 hover:text-navy-700"><Icon name="X" size={18} /></button>
+        </div>
+        <div className="px-5 py-5 sm:px-6">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function ConfirmDialog({ open, onClose, onConfirm, title, message, confirmLabel = 'Delete', loading }) {
+  return (
+    <Modal open={open} onClose={onClose} title={title || 'Are you sure?'} size="sm">
+      <div className="flex items-start gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600"><Icon name="AlertTriangle" size={20} /></div>
+        <p className="text-sm text-navy-600">{message}</p>
+      </div>
+      <div className="mt-6 flex justify-end gap-2">
+        <button onClick={onClose} className="btn-outline" disabled={loading}>Cancel</button>
+        <button onClick={onConfirm} className="btn-danger" disabled={loading}>{loading ? 'Deleting…' : confirmLabel}</button>
+      </div>
+    </Modal>
+  );
+}
+
+function StatusBadge({ stage }) {
+  const c = STAGE_STYLES[stage] || STAGE_STYLES.Received;
+  return <span className={'badge ' + c.bg + ' ' + c.text + ' ' + c.border}><span className={'h-1.5 w-1.5 rounded-full ' + c.dot} />{stage}</span>;
+}
+
+function DueBadge({ due }) {
+  const map = { overdue:'bg-red-50 text-red-700 border-red-200', today:'bg-amber-50 text-amber-700 border-amber-200', soon:'bg-orange-50 text-orange-700 border-orange-200', future:'bg-navy-50 text-navy-600 border-navy-200', done:'bg-emerald-50 text-emerald-700 border-emerald-200' };
+  return <span className={'badge ' + (map[due.severity] || map.future)}>{due.label}</span>;
+}
+
+function EmptyState({ icon = 'PackageOpen', title, description, action }) {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-navy-200 bg-white/50 px-6 py-16 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-100 text-navy-400"><Icon name={icon} size={26} /></div>
+      <h3 className="mt-4 text-sm font-semibold text-navy-800">{title}</h3>
+      {description && <p className="mt-1 max-w-sm text-sm text-navy-500">{description}</p>}
+      {action && <div className="mt-5">{action}</div>}
+    </div>
+  );
+}
+
+function LoadingSpinner({ label = 'Loading…' }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 py-16">
+      <div className="spinner" />
+      {label && <p className="text-sm font-medium text-navy-500">{label}</p>}
+    </div>
+  );
+}
+
+function SearchBar({ value, onChange, placeholder = 'Search…' }) {
+  return (
+    <div className="relative">
+      <Icon name="Search" size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-navy-400" />
+      <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="input pl-10 pr-9" />
+      {value && <button onClick={() => onChange('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-navy-400 hover:bg-navy-100 hover:text-navy-700"><Icon name="X" size={14} /></button>}
+    </div>
+  );
+}
+
+function DashboardCard({ label, value, icon, accent = 'navy', sub }) {
+  const accents = { navy:'bg-navy-100 text-navy-700', gold:'bg-gold-100 text-gold-700', green:'bg-emerald-100 text-emerald-700', orange:'bg-orange-100 text-orange-700', red:'bg-red-100 text-red-700', blue:'bg-blue-100 text-blue-700' };
+  return (
+    <div className="card transition-shadow hover:shadow-elevated">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-navy-400 sm:text-xs">{label}</p>
+          <p className="mt-1.5 text-xl font-bold tracking-tight text-navy-900 sm:text-2xl lg:text-3xl">{value}</p>
+          {sub && <p className="mt-0.5 text-[11px] text-navy-500">{sub}</p>}
+        </div>
+        {icon && <div className={'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ' + accents[accent] + ' sm:h-11 sm:w-11'}><Icon name={icon} size={19} /></div>}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+function CustomerForm({ initial, onSubmit, onCancel, loading }) {
+  const [name, setName] = useState(initial?.name || '');
+  const [phone, setPhone] = useState(initial?.phone || '');
+  const [errors, setErrors] = useState({});
+  const validate = () => {
+    const e = {};
+    if (!name.trim()) e.name = 'Customer name is required.';
+    if (!/^\d{10}$/.test(phone.replace(/\D/g, ''))) e.phone = 'Enter a valid 10-digit phone number.';
+    setErrors(e); return Object.keys(e).length === 0;
+  };
+  const submit = (ev) => { ev.preventDefault(); if (!validate()) return; onSubmit({ name: name.trim(), phone: phone.replace(/\D/g, '') }); };
+  return (
+    <form onSubmit={submit} className="space-y-4">
+      <div>
+        <label className="label">Customer Name *</label>
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Rahul Kumar" className={'input ' + (errors.name ? 'border-red-400' : '')} autoFocus />
+        {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
+      </div>
+      <div>
+        <label className="label">Phone Number *</label>
+        <input value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="10-digit mobile" inputMode="numeric" className={'input ' + (errors.phone ? 'border-red-400' : '')} />
+        {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
+      </div>
+      <div className="flex justify-end gap-2 pt-2">
+        <button type="button" onClick={onCancel} className="btn-outline" disabled={loading}>Cancel</button>
+        <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Saving…' : initial ? 'Update Customer' : 'Add Customer'}</button>
+      </div>
+    </form>
+  );
+}
+
+function MeasurementForm({ initial = {}, onSubmit, onCancel, loading }) {
+  const [values, setValues] = useState(() => {
+    const base = {};
+    MEASUREMENT_FIELDS.forEach(f => { base[f.key] = initial[f.key] !== undefined ? initial[f.key] : ''; });
+    Object.keys(initial).forEach(k => { if (!MEASUREMENT_FIELDS.find(f => f.key === k)) base[k] = initial[k]; });
+    return base;
+  });
+  const [customFields, setCustomFields] = useState(() => Object.keys(initial).filter(k => !MEASUREMENT_FIELDS.find(f => f.key === k)));
+  const [newField, setNewField] = useState('');
+  const [errors, setErrors] = useState({});
+  const update = (k, v) => setValues(p => Object.assign({}, p, { [k]: v.replace(/[^0-9.]/g, '') }));
+  const validate = () => {
+    const e = {};
+    Object.entries(values).forEach(([k, v]) => { if (v !== '' && v != null) { const n = Number(v); if (isNaN(n) || n < 0 || n > 100) e[k] = 'Enter 0–100'; } });
+    setErrors(e); return Object.keys(e).length === 0;
+  };
+  const submit = (ev) => { ev.preventDefault(); if (!validate()) return; const c = {}; Object.entries(values).forEach(([k, v]) => { if (v !== '' && v != null) c[k] = Number(v); }); onSubmit(c); };
+  const addCustom = () => { const key = newField.trim().toLowerCase().replace(/\s+/g, '_'); if (!key || values[key] !== undefined) return; setCustomFields(p => [...p, key]); setValues(p => Object.assign({}, p, { [key]: '' })); setNewField(''); };
+  const removeCustom = (key) => { setCustomFields(p => p.filter(k => k !== key)); setValues(p => { const n = Object.assign({}, p); delete n[key]; return n; }); };
+  return (
+    <form onSubmit={submit} className="space-y-5">
+      <div className="flex items-center gap-2 rounded-lg bg-gold-50 px-3.5 py-2.5 text-xs font-medium text-gold-700 ring-1 ring-gold-200/60">
+        <Icon name="Ruler" size={14} /> All measurements are in inches. Leave blank any that don't apply.
+      </div>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        {MEASUREMENT_FIELDS.map(f => (
+          <div key={f.key}>
+            <label className="label">{f.label}</label>
+            <input value={values[f.key] !== undefined ? values[f.key] : ''} onChange={(e) => update(f.key, e.target.value)} placeholder="0" inputMode="decimal" className={'input ' + (errors[f.key] ? 'border-red-400' : '')} />
+            {errors[f.key] && <p className="mt-1 text-[11px] text-red-600">{errors[f.key]}</p>}
+          </div>
+        ))}
+      </div>
+      {customFields.length > 0 && (
+        <div className="grid grid-cols-2 gap-4 border-t border-navy-100 pt-4 sm:grid-cols-3">
+          {customFields.map(key => (
+            <div key={key} className="relative">
+              <label className="label capitalize">{key.replace(/_/g, ' ')}</label>
+              <input value={values[key] !== undefined ? values[key] : ''} onChange={(e) => update(key, e.target.value)} placeholder="0" inputMode="decimal" className="input pr-9" />
+              <button type="button" onClick={() => removeCustom(key)} className="absolute right-2 top-8 rounded-md p-1 text-navy-400 hover:bg-red-50 hover:text-red-600"><Icon name="X" size={13} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="flex items-center gap-2">
+        <input value={newField} onChange={(e) => setNewField(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustom())} placeholder="Add custom measurement…" className="input flex-1" />
+        <button type="button" onClick={addCustom} className="btn-outline shrink-0"><Icon name="Plus" size={15} /> Add</button>
+      </div>
+      <div className="flex justify-end gap-2 border-t border-navy-100 pt-4">
+        <button type="button" onClick={onCancel} className="btn-outline" disabled={loading}>Cancel</button>
+        <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Saving…' : 'Save Measurements'}</button>
+      </div>
+    </form>
+  );
+}
+
+function OrderForm({ customers, initial, onSubmit, onCancel, loading }) {
+  const [form, setForm] = useState({
+    customer_id: initial?.customer_id || '',
+    garment: initial?.garment || 'Shirt',
+    fabric: initial?.fabric || '',
+    price: initial?.price !== undefined ? initial.price : '',
+    advance: initial?.advance !== undefined ? initial.advance : '',
+    delivery_date: initial?.delivery_date || '',
+    notes: initial?.notes || '',
+  });
+  const [errors, setErrors] = useState({});
+  const balance = useMemo(() => (Number(form.price) || 0) - (Number(form.advance) || 0), [form.price, form.advance]);
+  const set = (k, v) => setForm(p => Object.assign({}, p, { [k]: v }));
+  const validate = () => {
+    const e = {};
+    if (!form.customer_id) e.customer_id = 'Please select a customer.';
+    if (!form.garment) e.garment = 'Garment type is required.';
+    if (form.price === '' || Number(form.price) < 0) e.price = 'Enter a valid price.';
+    if (Number(form.advance) < 0) e.advance = 'Advance cannot be negative.';
+    if (Number(form.advance) > Number(form.price)) e.advance = 'Advance cannot exceed the price.';
+    if (!form.delivery_date) e.delivery_date = 'Delivery date is required.';
+    setErrors(e); return Object.keys(e).length === 0;
+  };
+  const submit = (ev) => { ev.preventDefault(); if (!validate()) return; onSubmit(Object.assign({}, form, { price: Number(form.price), advance: Number(form.advance) || 0 })); };
+  return (
+    <form onSubmit={submit} className="space-y-5">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <label className="label flex items-center gap-1.5"><Icon name="User" size={14} /> Customer *</label>
+          <select value={form.customer_id} onChange={(e) => set('customer_id', e.target.value)} className={'input ' + (errors.customer_id ? 'border-red-400' : '')}>
+            <option value="">Select a customer…</option>
+            {customers.map(c => <option key={c.id} value={c.id}>{c.name} · {c.phone}</option>)}
+          </select>
+          {errors.customer_id && <p className="mt-1 text-xs text-red-600">{errors.customer_id}</p>}
+        </div>
+        <div>
+          <label className="label flex items-center gap-1.5"><Icon name="Shirt" size={14} /> Garment Type *</label>
+          <select value={form.garment} onChange={(e) => set('garment', e.target.value)} className={'input ' + (errors.garment ? 'border-red-400' : '')}>
+            {GARMENTS.map(g => <option key={g} value={g}>{g}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="label">Fabric Details</label>
+          <input value={form.fabric} onChange={(e) => set('fabric', e.target.value)} placeholder="e.g. Cotton, Silk" className="input" list="fabric-options" />
+          <datalist id="fabric-options">{FABRICS.map(f => <option key={f} value={f} />)}</datalist>
+        </div>
+        <div>
+          <label className="label flex items-center gap-1.5"><Icon name="IndianRupee" size={14} /> Total Price *</label>
+          <input type="number" min="0" value={form.price} onChange={(e) => set('price', e.target.value)} placeholder="0" className={'input ' + (errors.price ? 'border-red-400' : '')} />
+          {errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
+        </div>
+        <div>
+          <label className="label flex items-center gap-1.5"><Icon name="IndianRupee" size={14} /> Advance Paid</label>
+          <input type="number" min="0" value={form.advance} onChange={(e) => set('advance', e.target.value)} placeholder="0" className={'input ' + (errors.advance ? 'border-red-400' : '')} />
+          {errors.advance && <p className="mt-1 text-xs text-red-600">{errors.advance}</p>}
+        </div>
+        <div className="sm:col-span-2">
+          <label className="label flex items-center gap-1.5"><Icon name="Calendar" size={14} /> Delivery Date *</label>
+          <input type="date" value={form.delivery_date} onChange={(e) => set('delivery_date', e.target.value)} className={'input ' + (errors.delivery_date ? 'border-red-400' : '')} />
+          {errors.delivery_date && <p className="mt-1 text-xs text-red-600">{errors.delivery_date}</p>}
+        </div>
+        <div className="sm:col-span-2">
+          <label className="label">Additional Notes</label>
+          <textarea value={form.notes} onChange={(e) => set('notes', e.target.value)} rows={2} placeholder="Any special instructions…" className="input resize-none" />
+        </div>
+      </div>
+      <div className="rounded-xl border border-navy-200 bg-navy-50/60 p-4">
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div><p className="text-[11px] font-semibold uppercase tracking-wider text-navy-400">Total</p><p className="mt-1 text-lg font-bold text-navy-900">₹{Number(form.price) || 0}</p></div>
+          <div><p className="text-[11px] font-semibold uppercase tracking-wider text-navy-400">Advance</p><p className="mt-1 text-lg font-bold text-emerald-600">₹{Number(form.advance) || 0}</p></div>
+          <div><p className="text-[11px] font-semibold uppercase tracking-wider text-navy-400">Balance</p><p className={'mt-1 text-lg font-bold ' + (balance > 0 ? 'text-orange-600' : 'text-emerald-600')}>₹{balance}</p></div>
+        </div>
+      </div>
+      <div className="flex justify-end gap-2 border-t border-navy-100 pt-4">
+        <button type="button" onClick={onCancel} className="btn-outline" disabled={loading}>Cancel</button>
+        <button type="submit" className="btn-gold" disabled={loading}>{loading ? 'Creating…' : initial ? 'Update Order' : 'Create Order'}</button>
+      </div>
+    </form>
+  );
+}
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+function LandingPage({ onChooseAdmin, onChooseShop }) {
+  return (
+    <div className="min-h-screen bg-navy-50">
+      <header className="border-b border-navy-200/70 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-900">
+              <Icon name="Scissors" size={20} className="text-gold-400" />
+            </div>
+            <div>
+              <h1 className="text-sm font-bold tracking-tight text-navy-900">Tailor Order Manager</h1>
+              <p className="text-[11px] text-navy-500">Stitching business, simplified</p>
+            </div>
+          </div>
+          <ThemeSwitcher />
+        </div>
+      </header>
+
+      <main>
+        {/* Hero */}
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage:'radial-gradient(circle at 1px 1px, rgb(var(--navy-900)) 1px, transparent 0)', backgroundSize:'32px 32px' }} />
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+            <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+              <div>
+                <span className="badge bg-gold-100 text-gold-700 border border-gold-200">
+                  <Icon name="Sparkles" size={12} /> Version 2.0 · Cloud-synced
+                </span>
+                <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-navy-900 sm:text-5xl lg:text-6xl">
+                  Every order,<br />
+                  <span className="text-gold-500">perfectly</span> managed.
+                </h1>
+                <p className="mt-5 max-w-lg text-base leading-relaxed text-navy-600 sm:text-lg">
+                  The complete order management system for tailoring shops.
+                  Track customers, measurements, orders, payments and delivery dates —
+                  all synced live across every device.
+                </p>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <button onClick={onChooseShop} className="btn-gold !px-6 !py-3.5 !text-base">
+                    <Icon name="Store" size={18} /> Open My Shop
+                    <Icon name="ArrowRight" size={16} />
+                  </button>
+                  <button onClick={onChooseAdmin} className="btn-outline !px-6 !py-3.5 !text-base">
+                    <Icon name="Shield" size={18} /> Admin Portal
+                  </button>
+                </div>
+                <p className="mt-4 text-xs text-navy-400">
+                  Free forever · No credit card required · Works on any device
+                </p>
+              </div>
+
+              <div className="relative">
+                <div className="rounded-2xl border border-navy-200 bg-white p-4 shadow-elevated">
+                  <div className="flex items-center gap-2 border-b border-navy-100 pb-3">
+                    <div className="h-3 w-3 rounded-full bg-red-400" />
+                    <div className="h-3 w-3 rounded-full bg-amber-400" />
+                    <div className="h-3 w-3 rounded-full bg-emerald-400" />
+                    <span className="ml-3 text-[11px] text-navy-400">app.tailor-manager.com/dashboard</span>
+                  </div>
+                  <div className="mt-4 space-y-3">
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { label:'Active Orders', value:'37', color:'text-navy-800' },
+                        { label:'Due Today', value:'6', color:'text-amber-600' },
+                        { label:'Overdue', value:'3', color:'text-red-600' },
+                      ].map(s => (
+                        <div key={s.label} className="rounded-lg border border-navy-100 bg-navy-50/50 p-3">
+                          <p className="text-[10px] font-medium uppercase tracking-wider text-navy-400">{s.label}</p>
+                          <p className={'mt-1 text-2xl font-bold ' + s.color}>{s.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                    {['ORD-1024 · Shirt · Ready', 'ORD-1025 · Suit · Stitching', 'ORD-1026 · Blouse · Cutting'].map((row, i) => (
+                      <div key={i} className="flex items-center gap-3 rounded-lg border border-navy-100 bg-white p-3">
+                        <div className={'h-8 w-1 rounded-full ' + (i===0?'bg-emerald-500':i===1?'bg-purple-500':'bg-amber-500')} />
+                        <div className="flex-1">
+                          <p className="text-xs font-medium text-navy-800">{row}</p>
+                          <p className="text-[10px] text-navy-400">Delivery in {i+1} days</p>
+                        </div>
+                        <span className="text-xs font-bold text-navy-600">₹{800 + i*450}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section className="border-t border-navy-200 bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">
+                Everything a tailoring shop needs
+              </h2>
+              <p className="mt-3 text-sm text-navy-500 sm:text-base">
+                Built specifically for tailors — not a generic CRM.
+              </p>
+            </div>
+
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                { icon:'Users', title:'Customer Management', desc:'Store customer details, phone, and full order history in one place.' },
+                { icon:'Ruler', title:'Measurement Vault', desc:'11 standard fields plus unlimited custom measurements per customer.' },
+                { icon:'ClipboardList', title:'Kanban Order Board', desc:'Drag orders through Received → Cutting → Stitching → Ready → Delivered.' },
+                { icon:'CalendarClock', title:'Smart Due Alerts', desc:'Automatic highlighting for overdue, due today, and due-soon orders.' },
+                { icon:'Wallet', title:'Payment Tracking', desc:'Track advance payments and pending balances per order.' },
+                { icon:'MessageCircle', title:'WhatsApp Updates', desc:'One-click pre-filled messages for order ready and payment reminders.' },
+                { icon:'Printer', title:'Printable Order Slips', desc:'Professional A5 receipts with measurements and balance.' },
+                { icon:'Cloud', title:'Real-time Sync', desc:'Changes appear instantly across every device you sign into.' },
+                { icon:'Shield', title:'Row-Level Security', desc:'Your shop\'s data is isolated. Other users can never see your orders.' },
+              ].map(f => (
+                <div key={f.title} className="card hover:shadow-elevated transition-shadow">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gold-100 text-gold-600">
+                    <Icon name={f.icon} size={20} />
+                  </div>
+                  <h3 className="mt-4 text-sm font-bold text-navy-900">{f.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-navy-500">{f.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="bg-navy-950">
+          <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 sm:py-20">
+            <h2 className="text-2xl font-bold tracking-tight text-white sm:text-4xl">
+              Ready to get organized?
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-sm text-navy-300 sm:text-base">
+              Create your free account in seconds. No setup, no installation.
+              Just sign up and start adding customers.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <button onClick={onChooseShop} className="btn-gold !px-6 !py-3.5 !text-base">
+                <Icon name="Store" size={18} /> Create Free Account
+              </button>
+              <button onClick={onChooseAdmin} className="btn !border-white/20 !bg-white/10 !px-6 !py-3.5 !text-base !text-white hover:!bg-white/20">
+                <Icon name="Shield" size={18} /> Admin Portal
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-navy-200 bg-white">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-6 sm:flex-row sm:px-6">
+          <p className="text-xs text-navy-400">© 2026 Tailor Order Manager · Built with Supabase</p>
+          <div className="flex items-center gap-2 text-xs text-navy-400">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" /> All systems operational
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+/* ============================================================
+   PORTAL CHOICE PAGE — small wrapper for landing → admin/shop
+   ============================================================ */
+function PortalChoice({ mode, onBack, onLogin, onSignup, loading }) {
+  const isAdmin = mode === 'admin';
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [shopName, setShopName] = useState('');
+  const [mode2, setMode2] = useState('login');
+  const [showPw, setShowPw] = useState(false);
+  const [infoMsg, setInfoMsg] = useState('');
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setInfoMsg('');
+    if (isAdmin) {
+      if (!email || !password) { setInfoMsg('Please enter username and password.'); return; }
+      try {
+        await onLogin(email, password);
+      } catch (err) { setInfoMsg(err.message || 'Invalid credentials.'); }
+      return;
+    }
+    if (mode2 === 'signup' && !shopName.trim()) { setInfoMsg('Please enter your shop name.'); return; }
+    if (!email || !password) { setInfoMsg('Please enter both email and password.'); return; }
+    if (password.length < 6) { setInfoMsg('Password must be at least 6 characters.'); return; }
+    try {
+      if (mode2 === 'signup') await onSignup(email, password, shopName.trim());
+      else await onLogin(email, password);
+    } catch (err) { setInfoMsg(err.message || 'Something went wrong.'); }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-navy-950">
+      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-navy-950 p-12 lg:flex">
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage:'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize:'32px 32px' }} />
+        <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-gold-500/10 blur-3xl" />
+
+        <button onClick={onBack} className="relative flex items-center gap-2 text-sm text-navy-400 hover:text-white transition-colors">
+          <Icon name="ArrowLeft" size={16} /> Back to home
+        </button>
+
+        <div className="relative">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold-500/15 ring-1 ring-gold-500/30">
+              <Icon name={isAdmin ? 'Shield' : 'Store'} size={24} className="text-gold-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-white">{isAdmin ? 'Admin Portal' : 'Shop Portal'}</h2>
+              <p className="text-xs text-navy-400">{isAdmin ? 'Platform management' : 'Manage your tailoring business'}</p>
+            </div>
+          </div>
+          <h3 className="mt-8 text-3xl font-bold leading-tight text-white">
+            {isAdmin ? 'Platform administration.' : 'Your shop, perfectly managed.'}
+          </h3>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-navy-400">
+            {isAdmin
+              ? 'Manage platform admins, oversee shops, and control access from a single dashboard.'
+              : 'Sign up free and start adding customers, orders, and payments today. Syncs live across all your devices.'}
+          </p>
+        </div>
+
+        <p className="relative text-[11px] text-navy-600">© 2026 Tailor Order Manager</p>
+      </div>
+
+      <div className="flex w-full items-center justify-center bg-navy-50 p-6 lg:w-1/2">
+        <div className="w-full max-w-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <button onClick={onBack} className="flex items-center gap-1.5 text-xs text-navy-500 hover:text-navy-800 lg:hidden">
+              <Icon name="ArrowLeft" size={14} /> Back
+            </button>
+            <ThemeSwitcher compact />
+          </div>
+
+          {!isAdmin && (
+            <div className="mb-5 flex rounded-xl bg-navy-100 p-1">
+              <button onClick={() => { setMode2('login'); setInfoMsg(''); }} className={'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all ' + (mode2 === 'login' ? 'bg-white text-navy-900 shadow-soft' : 'text-navy-500 hover:text-navy-700')}>Log In</button>
+              <button onClick={() => { setMode2('signup'); setInfoMsg(''); }} className={'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all ' + (mode2 === 'signup' ? 'bg-white text-navy-900 shadow-soft' : 'text-navy-500 hover:text-navy-700')}>Sign Up</button>
+            </div>
+          )}
+
+          <h2 className="text-2xl font-bold tracking-tight text-navy-900">
+            {isAdmin ? 'Admin login' : mode2 === 'login' ? 'Welcome back' : 'Create your shop'}
+          </h2>
+          <p className="mt-1 text-sm text-navy-500">
+            {isAdmin ? 'Sign in to manage platform admins.' : mode2 === 'login' ? 'Sign in to your shop.' : 'Free forever. No credit card.'}
+          </p>
+
+          <form onSubmit={submit} className="mt-7 space-y-4">
+            {!isAdmin && mode2 === 'signup' && (
+              <div>
+                <label className="label">Shop Name</label>
+                <input value={shopName} onChange={(e) => setShopName(e.target.value)} placeholder="Perfect Fit Tailors" className="input" />
+              </div>
+            )}
+            <div>
+              <label className="label">{isAdmin ? 'Username' : 'Email'}</label>
+              <input
+                type={isAdmin ? 'text' : 'email'}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={isAdmin ? 'admin' : 'you@example.com'}
+                className="input"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="label">Password</label>
+              <div className="relative">
+                <input type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={isAdmin ? '123' : 'At least 6 characters'} className="input pr-10" />
+                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-navy-400 hover:text-navy-600">
+                  <Icon name={showPw ? 'EyeOff' : 'Eye'} size={15} />
+                </button>
+              </div>
+            </div>
+
+            {infoMsg && <div className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">{infoMsg}</div>}
+
+            <button type="submit" className="btn-primary w-full" disabled={loading}>
+              {loading ? 'Please wait…' : isAdmin ? 'Sign In as Admin' : mode2 === 'login' ? 'Sign In' : 'Create Account'}
+            </button>
+          </form>
+
+          {isAdmin && (
+            <div className="mt-5 rounded-lg border border-gold-200 bg-gold-50 px-4 py-3 text-xs text-gold-800">
+              <strong>Demo admin:</strong> username <code className="rounded bg-gold-100 px-1 py-0.5">admin</code>, password <code className="rounded bg-gold-100 px-1 py-0.5">123</code>
+            </div>
+          )}
+
+          {!isAdmin && mode2 === 'signup' && (
+            <p className="mt-4 text-center text-xs text-navy-400">
+              You'll receive a confirmation email if enabled in Supabase.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   ADMIN DASHBOARD
+   ============================================================ */
+function AdminDashboardPage({ adminUser, admins, onAdd, onDelete, onLogout, adminLoading, toast }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [addLoading, setAddLoading] = useState(false);
+  const [confirmDel, setConfirmDel] = useState(null);
+
+  const submitAdd = async (e) => {
+    e.preventDefault();
+    if (!username.trim() || !password.trim()) { toast.error('Username and password are required.'); return; }
+    if (password.length < 3) { toast.error('Password must be at least 3 characters.'); return; }
+    setAddLoading(true);
+    try {
+      await onAdd(username.trim(), password.trim());
+      toast.success('Admin "' + username + '" added successfully.');
+      setUsername(''); setPassword('');
+    } catch (err) {
+      toast.error(err.message || 'Unable to add admin.');
+    } finally { setAddLoading(false); }
+  };
+
+  const handleDelete = async () => {
+    if (!confirmDel) return;
+    try {
+      await onDelete(confirmDel.id);
+      toast.success('Admin "' + confirmDel.username + '" removed.');
+      setConfirmDel(null);
+    } catch (err) { toast.error(err.message || 'Unable to remove admin.'); }
+  };
+
+  return (
+    <div className="min-h-screen bg-navy-50">
+      <header className="border-b border-navy-200 bg-white">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-900">
+              <Icon name="Shield" size={20} className="text-gold-400" />
+            </div>
+            <div>
+              <h1 className="text-sm font-bold tracking-tight text-navy-900">Admin Portal</h1>
+              <p className="text-[11px] text-navy-500">Signed in as {adminUser}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+            <button onClick={onLogout} className="btn-outline btn-sm text-red-600 hover:bg-red-50 hover:border-red-300">
+              <Icon name="LogOut" size={14} /> Sign Out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold tracking-tight text-navy-900">Platform Administration</h2>
+          <p className="mt-1 text-sm text-navy-500">Manage who has admin access to the platform.</p>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-3">
+          <div className="card lg:col-span-1">
+            <h3 className="text-sm font-bold text-navy-900">Add New Admin</h3>
+            <p className="mt-1 text-xs text-navy-500">New admins can sign in with the credentials you set here.</p>
+            <form onSubmit={submitAdd} className="mt-4 space-y-3">
+              <div>
+                <label className="label">Username</label>
+                <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="e.g. manager1" className="input" autoFocus />
+              </div>
+              <div>
+                <label className="label">Password</label>
+                <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 3 characters" className="input" />
+              </div>
+              <button type="submit" className="btn-gold w-full" disabled={addLoading}>
+                <Icon name="UserPlus" size={15} /> {addLoading ? 'Adding…' : 'Add Admin'}
+              </button>
+            </form>
+          </div>
+
+          <div className="card lg:col-span-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-navy-900">Platform Admins</h3>
+              <span className="badge bg-navy-100 text-navy-600 border border-navy-200">
+                {adminLoading ? '…' : admins.length + ' total'}
+              </span>
+            </div>
+
+            {adminLoading ? (
+              <LoadingSpinner label="Loading admins…" />
+            ) : admins.length === 0 ? (
+              <div className="mt-4">
+                <EmptyState icon="Shield" title="No additional admins" description="Add your first extra admin on the left." />
+              </div>
+            ) : (
+              <div className="mt-4 divide-y divide-navy-50">
+                {admins.map(a => (
+                  <div key={a.id || a.username} className="flex items-center gap-3 py-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold-100 text-sm font-bold text-gold-700">
+                      {initials(a.username)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate text-sm font-semibold text-navy-800">{a.username}</p>
+                      <p className="text-xs text-navy-400">
+                        {a.isDefault ? 'Built-in admin · cannot be removed' : 'Added ' + formatDate(a.created_at)}
+                      </p>
+                    </div>
+                    {a.isDefault ? (
+                      <span className="badge bg-gold-100 text-gold-700 border border-gold-200">
+                        <Icon name="Crown" size={11} /> Root
+                      </span>
+                    ) : (
+                      <button onClick={() => setConfirmDel(a)} className="rounded-lg p-2 text-navy-400 hover:bg-red-50 hover:text-red-600" title="Remove admin">
+                        <Icon name="Trash2" size={15} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-6 card border-gold-200 bg-gold-50/40">
+          <div className="flex items-start gap-3">
+            <Icon name="Info" size={18} className="mt-0.5 shrink-0 text-gold-600" />
+            <div>
+              <h3 className="text-sm font-bold text-gold-900">About the root admin</h3>
+              <p className="mt-1 text-xs leading-relaxed text-gold-800">
+                The built-in <strong>admin / 123</strong> account is hardcoded and cannot be removed.
+                Additional admins you add here are stored in Supabase and can sign in with their own credentials.
+                In a production system, you'd hash these passwords with bcrypt and use proper authentication.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <ConfirmDialog open={!!confirmDel} onClose={() => setConfirmDel(null)} onConfirm={handleDelete}
+        title="Remove admin?" message={'Remove admin access for "' + (confirmDel ? confirmDel.username : '') + '"?'} confirmLabel="Remove" />
+    </div>
+  );
+}
+
+/* ============================================================
+   SHELL (Sidebar + Topbar for shop)
+   ============================================================ */
+function Sidebar({ open, onClose, user, shopName, onLogout, route, onNav }) {
+  const nav = [
+    { name:'dashboard', label:'Dashboard', icon:'LayoutDashboard' },
+    { name:'customers', label:'Customers', icon:'Users' },
+    { name:'orders', label:'Orders Board', icon:'ClipboardList' },
+    { name:'payments', label:'Pending Payments', icon:'Wallet' },
+    { name:'settings', label:'Settings', icon:'Settings' },
+  ];
+  const isActive = (name) => {
+    if (name === 'orders') return ['orders','order','order-new','order-slip'].indexOf(route.name) !== -1;
+    if (name === 'customers') return ['customers','customer','measurements'].indexOf(route.name) !== -1;
+    return route.name === name;
+  };
+  return (
+    <Fragment>
+      {open && <div className="fixed inset-0 z-40 bg-navy-950/40 backdrop-blur-sm lg:hidden" onClick={onClose} />}
+      <aside className={'fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-navy-950 text-white transition-transform duration-200 lg:static lg:translate-x-0 no-print ' + (open ? 'translate-x-0' : '-translate-x-full')}>
+        <div className="flex items-center justify-between px-6 py-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-500/15 ring-1 ring-gold-500/30">
+              <Icon name="Scissors" size={20} className="text-gold-400" />
+            </div>
+            <div>
+              <h1 className="text-sm font-semibold tracking-tight">{shopName || 'Tailor Order'}</h1>
+              <p className="text-[11px] font-medium text-navy-400">Manager</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-navy-400 hover:bg-navy-800 hover:text-white lg:hidden"><Icon name="X" size={18} /></button>
+        </div>
+        <nav className="flex-1 space-y-1 px-3 py-2">
+          {nav.map(item => {
+            const active = isActive(item.name);
+            return (
+              <button key={item.name} onClick={() => { onNav({ name:item.name }); onClose(); }}
+                className={'group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ' + (active ? 'bg-gold-500/15 text-gold-300 ring-1 ring-gold-500/20' : 'text-navy-300 hover:bg-navy-800/70 hover:text-white')}>
+                <Icon name={item.icon} size={18} />
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="border-t border-navy-800 p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold-500/20 text-sm font-semibold text-gold-300 ring-1 ring-gold-500/30">
+              {initials(shopName || (user && user.email) || 'U')}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="truncate text-sm font-medium text-white">{shopName || 'My Shop'}</p>
+              <p className="truncate text-[11px] font-medium text-navy-400">{user && user.email}</p>
+            </div>
+            <button onClick={onLogout} className="rounded-lg p-2 text-navy-400 hover:bg-navy-800 hover:text-red-400" title="Log out"><Icon name="LogOut" size={16} /></button>
+          </div>
+        </div>
+      </aside>
+    </Fragment>
+  );
+}
+
+function Topbar({ onMenuClick, title }) {
+  return (
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-navy-200/70 bg-white/80 px-4 backdrop-blur-md sm:px-6 no-print">
+      <button onClick={onMenuClick} className="rounded-lg p-2 text-navy-600 hover:bg-navy-100 lg:hidden"><Icon name="Menu" size={20} /></button>
+      <h1 className="truncate text-base font-semibold text-navy-900 sm:text-lg">{title}</h1>
+      <div className="ml-auto flex items-center gap-2">
+        <span className="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200 sm:flex">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" /> Live
+        </span>
+        <ThemeSwitcher />
+      </div>
+    </header>
+  );
+}
+
+/* ============================================================
+   SETUP SCREEN
+   ============================================================ */
+function SetupScreen({ error }) {
+  return (
+    <div className="min-h-screen bg-navy-50 flex items-center justify-center p-6">
+      <div className="w-full max-w-2xl">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-navy-950"><Icon name="Scissors" size={24} className="text-gold-400" /></div>
+            <div>
+              <h1 className="text-lg font-bold text-navy-900">Tailor Order Manager</h1>
+              <p className="text-xs text-navy-500">Setup required</p>
+            </div>
+          </div>
+          <ThemeSwitcher />
+        </div>
+        <div className="card">
+          <h2 className="text-lg font-bold text-navy-900">Connect your Supabase backend</h2>
+          <p className="mt-1 text-sm text-navy-500">This app needs a Supabase project. It's free and takes about 5 minutes.</p>
+          {error && <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"><strong>Error:</strong> {error}</div>}
+          <ol className="mt-6 space-y-4 text-sm text-navy-700">
+            <li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-bold text-white">1</span><div><p className="font-semibold text-navy-900">Create a free Supabase project</p><p className="mt-0.5 text-navy-500">Go to <a href="https://supabase.com" target="_blank" rel="noreferrer" className="font-medium text-gold-600 underline">supabase.com</a> → New Project.</p></div></li>
+            <li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-bold text-white">2</span><div><p className="font-semibold text-navy-900">Run the SQL setup</p><p className="mt-0.5 text-navy-500">See the message accompanying this file for the full SQL script.</p></div></li>
+            <li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-bold text-white">3</span><div><p className="font-semibold text-navy-900">Copy your API keys</p><p className="mt-0.5 text-navy-500">Supabase → Settings → API. Copy the Project URL and anon key.</p></div></li>
+            <li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-bold text-white">4</span><div><p className="font-semibold text-navy-900">Paste them into this HTML file</p><pre className="mt-2 overflow-auto rounded-lg bg-navy-950 p-3 text-[11px] leading-relaxed text-emerald-300">{`const SUPABASE_URL      = 'https://xxxxx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOi...';`}</pre></div></li>
+            <li className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy-900 text-xs font-bold text-white">5</span><div><p className="font-semibold text-navy-900">Save and refresh</p><p className="mt-0.5 text-navy-500">You'll see the landing page.</p></div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   SHOP PAGES (Dashboard, Customers, etc.)
+   ============================================================ */
+function DashboardPage({ customers, orders, onNav }) {
+  const stats = useMemo(() => {
+    const today = todayStr(); const in3 = addDaysStr(3);
+    const active = orders.filter(o => o.stage !== 'Delivered');
+    const pendingBalance = active.reduce((s, o) => s + Math.max(0, o.price - o.advance), 0);
+    const stageCounts = {}; STAGES.forEach(s => stageCounts[s] = orders.filter(o => o.stage === s).length);
+    const monthKey = new Date().toISOString().slice(0, 7);
+    const revenueThisMonth = orders.filter(o => o.created_at && o.created_at.slice(0,7) === monthKey).reduce((s, o) => s + Number(o.advance || 0), 0);
+    const completedThisMonth = orders.filter(o => o.stage === 'Delivered' && o.updated_at && o.updated_at.slice(0,7) === monthKey).length;
+    const urgent = active.filter(o => o.delivery_date <= in3).sort((a,b) => a.delivery_date.localeCompare(b.delivery_date)).slice(0, 8);
+    const recentCustomers = [...customers].sort((a,b) => (b.created_at||'').localeCompare(a.created_at||'')).slice(0, 5);
+    const garmentCounts = {}; orders.forEach(o => { garmentCounts[o.garment] = (garmentCounts[o.garment] || 0) + 1; });
+    const popular = Object.entries(garmentCounts).sort((a,b) => b[1] - a[1])[0];
+    return { totalCustomers: customers.length, activeOrders: active.length, dueToday: active.filter(o => o.delivery_date === today).length, dueSoon: active.filter(o => o.delivery_date > today && o.delivery_date <= in3).length, overdue: active.filter(o => o.delivery_date < today).length, pendingBalance, stageCounts, revenueThisMonth, completedThisMonth, urgent, recentCustomers, popularGarment: popular ? { garment:popular[0], count:popular[1] } : null };
+  }, [customers, orders]);
+  const getCustomer = (id) => customers.find(c => c.id === id);
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight text-navy-900 sm:text-2xl">{greeting()} 👋</h2>
+          <p className="mt-1 text-sm text-navy-500">Here's today's tailoring overview.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => onNav({ name:'customers', params:{ new:1 } })} className="btn-outline btn-sm"><Icon name="UserPlus" size={15} /> New Customer</button>
+          <button onClick={() => onNav({ name:'order-new' })} className="btn-gold btn-sm"><Icon name="Plus" size={15} /> New Order</button>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 xl:grid-cols-6">
+        <DashboardCard label="Total Customers" value={stats.totalCustomers} icon="Users" accent="navy" />
+        <DashboardCard label="Active Orders" value={stats.activeOrders} icon="ClipboardList" accent="blue" />
+        <DashboardCard label="Due Today" value={stats.dueToday} icon="CalendarClock" accent="orange" />
+        <DashboardCard label="Next 3 Days" value={stats.dueSoon} icon="Calendar" accent="gold" />
+        <DashboardCard label="Overdue" value={stats.overdue} icon="AlertTriangle" accent="red" />
+        <DashboardCard label="Pending Balance" value={formatCurrency(stats.pendingBalance)} icon="Wallet" accent="green" />
+      </div>
+      <div className="grid gap-5 lg:grid-cols-3">
+        <div className="card lg:col-span-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-navy-800">Order Status Overview</h3>
+            <button onClick={() => onNav({ name:'orders' })} className="flex items-center gap-1 text-xs font-medium text-gold-600 hover:text-gold-700">View board <Icon name="ArrowRight" size={13} /></button>
+          </div>
+          <div className="mt-4 grid grid-cols-5 gap-2">
+            {STAGES.map(stage => {
+              const c = STAGE_STYLES[stage];
+              return (
+                <button key={stage} onClick={() => onNav({ name:'orders', params:{ stage } })} className={'rounded-xl border p-2.5 text-center transition-all hover:-translate-y-0.5 hover:shadow-soft sm:p-3 ' + c.bg + ' ' + c.border}>
+                  <div className={'mx-auto mb-2 h-1.5 w-6 rounded-full ' + c.dot} />
+                  <p className="text-lg font-bold text-navy-900 sm:text-xl">{stats.stageCounts[stage] || 0}</p>
+                  <p className="mt-0.5 text-[10px] font-semibold text-navy-500 sm:text-[11px]">{stage}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="card">
+          <h3 className="text-sm font-semibold text-navy-800">This Month</h3>
+          <div className="mt-4 space-y-2.5">
+            <div className="flex items-center gap-2.5 rounded-lg bg-emerald-50 px-3.5 py-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600"><Icon name="TrendingUp" size={17} /></div>
+              <div><p className="text-[11px] font-medium text-emerald-600">Revenue collected</p><p className="text-sm font-bold text-emerald-800">{formatCurrency(stats.revenueThisMonth)}</p></div>
+            </div>
+            <div className="flex items-center gap-2.5 rounded-lg bg-navy-50 px-3.5 py-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-navy-100 text-navy-600"><Icon name="ClipboardList" size={17} /></div>
+              <div><p className="text-[11px] font-medium text-navy-500">Orders completed</p><p className="text-sm font-bold text-navy-800">{stats.completedThisMonth}</p></div>
+            </div>
+            {stats.popularGarment && (
+              <div className="flex items-center gap-2.5 rounded-lg bg-gold-50 px-3.5 py-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold-100 text-gold-600"><Icon name="Shirt" size={17} /></div>
+                <div><p className="text-[11px] font-medium text-gold-600">Most popular garment</p><p className="text-sm font-bold text-gold-800">{stats.popularGarment.garment}</p></div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="card">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-navy-800">Today's & Urgent Orders</h3>
+          <button onClick={() => onNav({ name:'orders' })} className="flex items-center gap-1 text-xs font-medium text-gold-600 hover:text-gold-700">All orders <Icon name="ArrowRight" size={13} /></button>
+        </div>
+        {stats.urgent.length === 0 ? (
+          <div className="mt-4"><EmptyState icon="CheckCircle2" title="No urgent orders" description="You're all caught up." /></div>
+        ) : (
+          <div className="mt-4 space-y-2">
+            {stats.urgent.map(o => {
+              const c = getCustomer(o.customer_id); const due = getDueInfo(o.delivery_date, o.stage); const bal = o.price - o.advance;
+              const rowBg = { overdue:'bg-red-50/60 border-red-200', today:'bg-amber-50/60 border-amber-200', soon:'bg-orange-50/40 border-orange-200', future:'bg-white border-navy-200', done:'bg-emerald-50/40 border-emerald-200' };
+              return (
+                <button key={o.id} onClick={() => onNav({ name:'order', params:{ id:o.id } })} className={'flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-all hover:shadow-soft ' + rowBg[due.severity]}>
+                  <div className={'h-9 w-1 rounded-full ' + (due.severity==='overdue'?'bg-red-500':due.severity==='today'?'bg-amber-500':due.severity==='soon'?'bg-orange-400':'bg-navy-300')} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2"><span className="text-xs font-bold text-navy-500">{o.order_code}</span><DueBadge due={due} /></div>
+                    <p className="mt-0.5 truncate text-sm font-semibold text-navy-900">{(c && c.name) || 'Unknown'}</p>
+                    <p className="text-xs text-navy-500">{o.garment} · {formatDate(o.delivery_date)}</p>
+                  </div>
+                  <div className="shrink-0 text-right"><p className={'text-sm font-bold ' + (bal > 0 ? 'text-orange-600' : 'text-emerald-600')}>{bal > 0 ? formatCurrency(bal) : 'Paid'}</p><StatusBadge stage={o.stage} /></div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      <div className="grid gap-5 lg:grid-cols-3">
+        <div className="card lg:col-span-2">
+          <h3 className="text-sm font-semibold text-navy-800">Recent Customers</h3>
+          {stats.recentCustomers.length === 0 ? (
+            <div className="mt-3"><EmptyState icon="Users" title="No customers yet" /></div>
+          ) : (
+            <div className="mt-3 divide-y divide-navy-50">
+              {stats.recentCustomers.map(c => (
+                <button key={c.id} onClick={() => onNav({ name:'customer', params:{ id:c.id } })} className="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 -mx-2 text-left transition-colors hover:bg-navy-50/50">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-100 text-xs font-semibold text-navy-600">{initials(c.name)}</div>
+                  <div className="flex-1 min-w-0"><p className="truncate text-sm font-medium text-navy-800">{c.name}</p><p className="text-xs text-navy-400">{c.phone}</p></div>
+                  <Icon name="ChevronRight" size={15} className="text-navy-300" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="card">
+          <h3 className="text-sm font-semibold text-navy-800">Quick Actions</h3>
+          <div className="mt-3 space-y-2">
+            {[
+              { label:'New Customer', icon:'UserPlus', bg:'bg-gold-100 text-gold-600', nav:{ name:'customers', params:{ new:1 } } },
+              { label:'New Order', icon:'Plus', bg:'bg-navy-100 text-navy-600', nav:{ name:'order-new' } },
+              { label:'Orders Board', icon:'ClipboardList', bg:'bg-blue-100 text-blue-600', nav:{ name:'orders' } },
+              { label:'Pending Payments', icon:'Wallet', bg:'bg-orange-100 text-orange-600', nav:{ name:'payments' } },
+            ].map(a => (
+              <button key={a.label} onClick={() => onNav(a.nav)} className="flex w-full items-center gap-3 rounded-lg border border-navy-200 px-3.5 py-2.5 text-left text-sm font-medium text-navy-700 transition-colors hover:border-gold-300 hover:bg-gold-50/50">
+                <div className={'flex h-8 w-8 items-center justify-center rounded-lg ' + a.bg}><Icon name={a.icon} size={16} /></div>
+                {a.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CustomersPage({ customers, orders, onCreate, onUpdate, onDelete, onNav, toast, routeParams, clearParams }) {
+  const [search, setSearch] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => { if (routeParams && routeParams.new === 1) { setEditing(null); setModalOpen(true); clearParams && clearParams(); } }, [routeParams]); // eslint-disable-line
+  const enriched = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    const list = !q ? customers : customers.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q));
+    return list.map(c => {
+      const cOrders = orders.filter(o => o.customer_id === c.id);
+      const pendingBalance = cOrders.filter(o => o.stage !== 'Delivered').reduce((s, o) => s + Math.max(0, o.price - o.advance), 0);
+      const lastOrder = cOrders.length ? cOrders.map(o => o.created_at).sort().slice(-1)[0] : null;
+      return Object.assign({}, c, { order_count: cOrders.length, pending_balance: pendingBalance, last_order: lastOrder });
+    });
+  }, [customers, orders, search]);
+  const handleSave = async (data) => {
+    setSaving(true);
+    try {
+      if (editing) { await onUpdate(editing.id, data); toast.success(data.name + "'s details updated."); }
+      else { await onCreate(data); toast.success(data.name + ' added to your customers.'); }
+      setModalOpen(false); setEditing(null);
+    } catch (err) { toast.error(err.message || 'Unable to save customer.'); } finally { setSaving(false); }
+  };
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
+    try { await onDelete(confirmDelete.id); toast.success(confirmDelete.name + ' removed.'); setConfirmDelete(null); }
+    catch (err) { toast.error(err.message || 'Unable to delete customer.'); }
+  };
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div><h2 className="text-lg font-bold text-navy-900">Customers</h2><p className="text-sm text-navy-500">{customers.length} customer{customers.length !== 1 ? 's' : ''}</p></div>
+        <button onClick={() => { setEditing(null); setModalOpen(true); }} className="btn-gold btn-sm self-start sm:self-auto"><Icon name="UserPlus" size={15} /> Add Customer</button>
+      </div>
+      <div className="max-w-md"><SearchBar value={search} onChange={setSearch} placeholder="Search by name or phone number…" /></div>
+      {enriched.length === 0 ? (
+        <EmptyState icon="Users" title={search ? 'No customers found' : 'No customers yet'} description={search ? 'No customers match "' + search + '".' : 'Add your first customer to start creating orders.'} action={!search && <button onClick={() => setModalOpen(true)} className="btn-gold btn-sm"><Icon name="UserPlus" size={14} /> Add Customer</button>} />
+      ) : (
+        <Fragment>
+          <div className="hidden overflow-x-auto rounded-xl border border-navy-200 bg-white lg:block">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-navy-100 bg-navy-50/50 text-left text-[11px] font-semibold uppercase tracking-wider text-navy-500">
+                  <th className="px-4 py-3">Customer</th><th className="px-4 py-3">Phone</th><th className="px-4 py-3">Measurements</th><th className="px-4 py-3 text-center">Orders</th><th className="px-4 py-3 text-right">Pending</th><th className="px-4 py-3">Last Order</th><th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-navy-50">
+                {enriched.map(c => {
+                  const hasMeas = Object.values(c.measurements || {}).some(v => v !== '' && v != null);
+                  return (
+                    <tr key={c.id} onClick={() => onNav({ name:'customer', params:{ id:c.id } })} className="cursor-pointer transition-colors hover:bg-navy-50/50">
+                      <td className="px-4 py-3"><div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-100 text-xs font-semibold text-navy-600">{initials(c.name)}</div><div><p className="font-medium text-navy-800">{c.name}</p><p className="text-[11px] text-navy-400">#{c.id}</p></div></div></td>
+                      <td className="px-4 py-3"><span className="inline-flex items-center gap-1.5 text-navy-600"><Icon name="Phone" size={12} className="text-navy-400" /> {c.phone}</span></td>
+                      <td className="px-4 py-3"><span className={'badge ' + (hasMeas ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-navy-50 text-navy-500 border-navy-200')}>{hasMeas ? 'Recorded' : 'Not set'}</span></td>
+                      <td className="px-4 py-3 text-center font-medium text-navy-700">{c.order_count}</td>
+                      <td className={'px-4 py-3 text-right font-semibold ' + (c.pending_balance > 0 ? 'text-orange-600' : 'text-emerald-600')}>{c.pending_balance > 0 ? formatCurrency(c.pending_balance) : '—'}</td>
+                      <td className="px-4 py-3 text-navy-500">{c.last_order ? formatDate(c.last_order) : '—'}</td>
+                      <td className="px-4 py-3"><div className="flex items-center justify-end gap-1">
+                        <button onClick={(e) => { e.stopPropagation(); onNav({ name:'customer', params:{ id:c.id } }); }} className="rounded-lg p-2 text-navy-400 hover:bg-navy-100 hover:text-navy-700"><Icon name="Eye" size={15} /></button>
+                        <button onClick={(e) => { e.stopPropagation(); setEditing(c); setModalOpen(true); }} className="rounded-lg p-2 text-navy-400 hover:bg-navy-100 hover:text-navy-700"><Icon name="Pencil" size={15} /></button>
+                        <button onClick={(e) => { e.stopPropagation(); setConfirmDelete(c); }} className="rounded-lg p-2 text-navy-400 hover:bg-red-50 hover:text-red-600"><Icon name="Trash2" size={15} /></button>
+                      </div></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="space-y-2.5 lg:hidden">
+            {enriched.map(c => {
+              const hasMeas = Object.values(c.measurements || {}).some(v => v !== '' && v != null);
+              return (
+                <div key={c.id} className="rounded-xl border border-navy-200 bg-white p-3.5 shadow-soft">
+                  <div className="flex items-start gap-3">
+                    <button onClick={() => onNav({ name:'customer', params:{ id:c.id } })} className="flex flex-1 items-start gap-3 text-left min-w-0">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy-100 text-xs font-semibold text-navy-600">{initials(c.name)}</div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold text-navy-800">{c.name}</p>
+                        <p className="text-xs text-navy-500">{c.phone}</p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                          <span className={'badge ' + (hasMeas ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-navy-50 text-navy-500 border-navy-200')}>{hasMeas ? 'Measurements set' : 'No measurements'}</span>
+                          <span className="badge bg-navy-50 text-navy-600 border-navy-200">{c.order_count} orders</span>
+                        </div>
+                      </div>
+                    </button>
+                    <div className="flex shrink-0 flex-col items-end gap-1.5">
+                      {c.pending_balance > 0 && <span className="text-sm font-bold text-orange-600">{formatCurrency(c.pending_balance)}</span>}
+                      <div className="flex gap-1">
+                        <button onClick={() => { setEditing(c); setModalOpen(true); }} className="rounded-lg p-1.5 text-navy-400 hover:bg-navy-100 hover:text-navy-700"><Icon name="Pencil" size={14} /></button>
+                        <button onClick={() => setConfirmDelete(c)} className="rounded-lg p-1.5 text-navy-400 hover:bg-red-50 hover:text-red-600"><Icon name="Trash2" size={14} /></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Fragment>
+      )}
+      <Modal open={modalOpen} onClose={() => { setModalOpen(false); setEditing(null); }} title={editing ? 'Edit Customer' : 'Add New Customer'}>
+        <CustomerForm initial={editing} onSubmit={handleSave} onCancel={() => { setModalOpen(false); setEditing(null); }} loading={saving} />
+      </Modal>
+      <ConfirmDialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} onConfirm={handleDelete} title="Delete customer?" message={'This will permanently delete ' + (confirmDelete ? confirmDelete.name : '') + ' and all their orders.'} />
+    </div>
+  );
+}
+
+function CustomerDetailPage({ customers, orders, onUpdate, onDelete, onNav, toast, customerId }) {
+  const customer = customers.find(c => c.id === customerId);
+  const [editOpen, setEditOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  if (!customer) return <EmptyState icon="AlertTriangle" title="Customer not found" action={<button onClick={() => onNav({ name:'customers' })} className="btn-primary btn-sm">Back</button>} />;
+  const customerOrders = orders.filter(o => o.customer_id === customerId).sort((a,b) => (b.created_at||'').localeCompare(a.created_at||''));
+  const filledMeasurements = Object.entries(customer.measurements || {}).filter(([,v]) => v !== '' && v != null);
+  const totalBalance = customerOrders.reduce((s,o) => s + (o.stage !== 'Delivered' ? Math.max(0,o.price - o.advance) : 0), 0);
+  const handleUpdate = async (data) => { try { await onUpdate(customerId, data); toast.success('Customer updated.'); setEditOpen(false); } catch (err) { toast.error(err.message); } };
+  const handleDelete = async () => { try { await onDelete(customerId); toast.success('Customer deleted.'); onNav({ name:'customers' }); } catch (err) { toast.error(err.message); } };
+  return (
+    <div className="space-y-5">
+      <button onClick={() => onNav({ name:'customers' })} className="btn-ghost btn-sm -ml-2"><Icon name="ArrowLeft" size={15} /> Back to Customers</button>
+      <div className="card">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-900 text-lg font-bold text-gold-400">{initials(customer.name)}</div>
+            <div>
+              <h2 className="text-lg font-bold text-navy-900">{customer.name}</h2>
+              <div className="mt-0.5 flex flex-wrap items-center gap-3 text-sm text-navy-500">
+                <span className="flex items-center gap-1.5"><Icon name="Phone" size={13} /> {customer.phone}</span><span className="text-navy-300">·</span><span>Customer #{customer.id}</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a href={buildWhatsAppLink(customer.phone, 'Hello ' + customer.name + ', regarding your tailoring orders…')} target="_blank" rel="noreferrer" className="btn-outline btn-sm"><Icon name="MessageCircle" size={15} /> WhatsApp</a>
+            <button onClick={() => setEditOpen(true)} className="btn-outline btn-sm"><Icon name="Pencil" size={14} /> Edit</button>
+            <button onClick={() => setConfirmDelete(true)} className="btn-outline btn-sm text-red-600 hover:bg-red-50 hover:border-red-300"><Icon name="Trash2" size={14} /> Delete</button>
+          </div>
+        </div>
+        <div className="mt-5 grid grid-cols-3 gap-3 border-t border-navy-100 pt-4">
+          <div className="text-center"><p className="text-xs font-medium text-navy-400">Total Orders</p><p className="mt-1 text-xl font-bold text-navy-900">{customerOrders.length}</p></div>
+          <div className="text-center"><p className="text-xs font-medium text-navy-400">Pending Balance</p><p className={'mt-1 text-xl font-bold ' + (totalBalance > 0 ? 'text-orange-600' : 'text-emerald-600')}>{totalBalance > 0 ? formatCurrency(totalBalance) : '₹0'}</p></div>
+          <div className="text-center"><p className="text-xs font-medium text-navy-400">Member Since</p><p className="mt-1 text-sm font-semibold text-navy-700">{formatDate(customer.created_at)}</p></div>
+        </div>
+      </div>
+      <div className="card">
+        <div className="flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-navy-800"><Icon name="Ruler" size={16} className="text-gold-500" /> Measurements</h3>
+          <button onClick={() => onNav({ name:'measurements', params:{ id:customerId } })} className="btn-outline btn-sm"><Icon name="Pencil" size={13} /> Edit</button>
+        </div>
+        {filledMeasurements.length === 0 ? (
+          <div className="mt-4"><EmptyState icon="Ruler" title="No measurements recorded" action={<button onClick={() => onNav({ name:'measurements', params:{ id:customerId } })} className="btn-gold btn-sm"><Icon name="Plus" size={14} /> Add Measurements</button>} /></div>
+        ) : (
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {filledMeasurements.map(([key, val]) => {
+              const field = MEASUREMENT_FIELDS.find(f => f.key === key);
+              return (<div key={key} className="rounded-lg border border-navy-100 bg-navy-50/40 px-3.5 py-2.5"><p className="text-[11px] font-medium uppercase tracking-wide text-navy-400">{field ? field.label : key.replace(/_/g,' ')}</p><p className="mt-0.5 text-sm font-bold text-navy-800">{val} <span className="text-xs font-normal text-navy-400">in</span></p></div>);
+            })}
+          </div>
+        )}
+      </div>
+      <div className="card">
+        <div className="flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-navy-800"><Icon name="ClipboardList" size={16} className="text-gold-500" /> Order History</h3>
+          <button onClick={() => onNav({ name:'order-new', params:{ customer: customerId } })} className="btn-gold btn-sm"><Icon name="Plus" size={13} /> New Order</button>
+        </div>
+        {customerOrders.length === 0 ? (
+          <div className="mt-4"><EmptyState icon="ClipboardList" title="No orders yet" action={<button onClick={() => onNav({ name:'order-new', params:{ customer: customerId } })} className="btn-gold btn-sm"><Icon name="Plus" size={14} /> Create Order</button>} /></div>
+        ) : (
+          <div className="mt-4 space-y-2">
+            {customerOrders.map(o => {
+              const due = getDueInfo(o.delivery_date, o.stage); const bal = o.price - o.advance;
+              return (
+                <button key={o.id} onClick={() => onNav({ name:'order', params:{ id:o.id } })} className={'flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-all hover:shadow-soft ' + (due.severity === 'overdue' ? 'border-red-200 bg-red-50/40' : 'border-navy-200 bg-white')}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2"><span className="text-xs font-bold text-navy-500">{o.order_code}</span><DueBadge due={due} /></div>
+                    <p className="mt-0.5 text-sm font-medium text-navy-800">{o.garment}{o.fabric ? ' · ' + o.fabric : ''}</p>
+                    <p className="text-xs text-navy-400">Created {formatDate(o.created_at)}</p>
+                  </div>
+                  <div className="shrink-0 text-right"><p className={'text-sm font-bold ' + (bal > 0 ? 'text-orange-600' : 'text-emerald-600')}>{bal > 0 ? formatCurrency(bal) : 'Paid'}</p><StatusBadge stage={o.stage} /></div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit Customer">
+        <CustomerForm initial={customer} onSubmit={handleUpdate} onCancel={() => setEditOpen(false)} />
+      </Modal>
+      <ConfirmDialog open={confirmDelete} onClose={() => setConfirmDelete(false)} onConfirm={handleDelete} title="Delete customer?" message={'This will permanently delete ' + customer.name + ' and all their orders.'} />
+    </div>
+  );
+}
+
+function MeasurementsPage({ customers, onUpdate, onNav, toast, customerId }) {
+  const customer = customers.find(c => c.id === customerId);
+  const [saving, setSaving] = useState(false);
+  if (!customer) return <EmptyState icon="AlertTriangle" title="Customer not found" />;
+  const handleSave = async (measurements) => {
+    setSaving(true);
+    try { await onUpdate(customerId, { measurements }); toast.success('Measurements saved.'); onNav({ name:'customer', params:{ id:customerId } }); }
+    catch (err) { toast.error(err.message); } finally { setSaving(false); }
+  };
+  return (
+    <div className="mx-auto max-w-3xl space-y-5">
+      <button onClick={() => onNav({ name:'customer', params:{ id:customerId } })} className="btn-ghost btn-sm -ml-2"><Icon name="ArrowLeft" size={15} /> Back to {customer.name}</button>
+      <div className="card">
+        <div className="mb-5">
+          <h2 className="flex items-center gap-2 text-lg font-bold text-navy-900"><Icon name="Ruler" size={20} className="text-gold-500" /> Measurements</h2>
+          <p className="mt-1 text-sm text-navy-500">For <span className="font-medium text-navy-700">{customer.name}</span> · {customer.phone}</p>
+        </div>
+        <MeasurementForm initial={customer.measurements || {}} onSubmit={handleSave} onCancel={() => onNav({ name:'customer', params:{ id:customerId } })} loading={saving} />
+      </div>
+    </div>
+  );
+}
+
+function NewOrderPage({ customers, orders, onCreateOrder, onNav, toast, routeParams }) {
+  const [saving, setSaving] = useState(false);
+  if (customers.length === 0) return (
+    <div className="mx-auto max-w-2xl">
+      <EmptyState icon="AlertTriangle" title="No customers yet" description="Add a customer first." action={<button onClick={() => onNav({ name:'customers', params:{ new:1 } })} className="btn-gold btn-sm"><Icon name="Plus" size={14} /> Add Customer</button>} />
+    </div>
+  );
+  const handleSubmit = async (data) => {
+    setSaving(true);
+    try { const created = await onCreateOrder(data, orders); toast.success('Order ' + created.order_code + ' created.'); onNav({ name:'order', params:{ id:created.id } }); }
+    catch (err) { toast.error(err.message); setSaving(false); }
+  };
+  const initial = routeParams && routeParams.customer ? { customer_id: Number(routeParams.customer) } : undefined;
+  return (
+    <div className="mx-auto max-w-3xl space-y-5">
+      <button onClick={() => onNav({ name:'orders' })} className="btn-ghost btn-sm -ml-2"><Icon name="ArrowLeft" size={15} /> Back</button>
+      <div className="card">
+        <div className="mb-5"><h2 className="text-lg font-bold text-navy-900">Create New Order</h2><p className="mt-1 text-sm text-navy-500">Balance is calculated automatically.</p></div>
+        <OrderForm customers={customers} initial={initial} onSubmit={handleSubmit} onCancel={() => onNav({ name:'orders' })} loading={saving} />
+      </div>
+    </div>
+  );
+}
+
+function OrdersBoardPage({ customers, orders, onMoveStage, onNav, toast, routeParams }) {
+  const [search, setSearch] = useState('');
+  const [dueFilter, setDueFilter] = useState('all');
+  const [draggedId, setDraggedId] = useState(null);
+  const [dragOverStage, setDragOverStage] = useState(null);
+  const stageParam = routeParams && routeParams.stage;
+  const getCustomer = (id) => customers.find(c => c.id === id);
+  const filtered = useMemo(() => {
+    let list = [...orders];
+    if (stageParam) list = list.filter(o => o.stage === stageParam);
+    if (dueFilter !== 'all') {
+      const today = todayStr(); const in3 = addDaysStr(3);
+      list = list.filter(o => { if (o.stage === 'Delivered') return false; if (dueFilter === 'overdue') return o.delivery_date < today; if (dueFilter === 'today') return o.delivery_date === today; if (dueFilter === 'soon') return o.delivery_date > today && o.delivery_date <= in3; return true; });
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      list = list.filter(o => { const c = getCustomer(o.customer_id); return (c && (c.name.toLowerCase().includes(q) || c.phone.includes(q))) || o.order_code.toLowerCase().includes(q); });
+    }
+    return list;
+  }, [orders, customers, search, dueFilter, stageParam]);
+  const handleDrop = async (stage) => {
+    if (!draggedId) return;
+    const order = orders.find(o => o.id === draggedId);
+    if (!order || order.stage === stage) { setDragOverStage(null); setDraggedId(null); return; }
+    try { await onMoveStage(order.id, stage); toast.success(order.order_code + ' moved to ' + stage + '.'); }
+    catch (err) { toast.error(err.message); } finally { setDragOverStage(null); setDraggedId(null); }
+  };
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div><h2 className="text-lg font-bold text-navy-900">Orders Board</h2><p className="text-sm text-navy-500">Drag orders between stages to update progress.</p></div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="w-full sm:w-64"><SearchBar value={search} onChange={setSearch} placeholder="Search orders…" /></div>
+          <select value={dueFilter} onChange={(e) => setDueFilter(e.target.value)} className="input !w-auto !py-2 text-sm">
+            <option value="all">All orders</option><option value="overdue">Overdue</option><option value="today">Due today</option><option value="soon">Due soon (3 days)</option>
+          </select>
+          <button onClick={() => onNav({ name:'order-new' })} className="btn-gold btn-sm"><Icon name="Plus" size={15} /> New Order</button>
+        </div>
+      </div>
+      {filtered.length === 0 && (search || dueFilter !== 'all' || stageParam) ? (
+        <EmptyState icon="ClipboardList" title="No matching orders" description="Try adjusting your search or filter." />
+      ) : orders.length === 0 ? (
+        <EmptyState icon="ClipboardList" title="No orders yet" description="Create your first stitching order." action={<button onClick={() => onNav({ name:'order-new' })} className="btn-gold btn-sm"><Icon name="Plus" size={14} /> Create Order</button>} />
+      ) : (
+        <div className="kanban-scroll -mx-4 px-4 pb-3 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+          <div className="flex gap-4" style={{ minWidth: STAGES.length * 288 }}>
+            {STAGES.map(stage => {
+              const stageOrders = filtered.filter(o => o.stage === stage);
+              const c = STAGE_STYLES[stage]; const isOver = dragOverStage === stage;
+              return (
+                <div key={stage} className="flex w-72 shrink-0 flex-col sm:w-64 lg:w-72">
+                  <div className={'flex items-center justify-between rounded-t-xl border border-b-0 px-3.5 py-3 ' + c.bg + ' ' + c.border}>
+                    <div className="flex items-center gap-2"><span className={'h-2 w-2 rounded-full ' + c.dot} /><h3 className={'text-xs font-bold uppercase tracking-wider ' + c.text}>{stage}</h3></div>
+                    <span className="rounded-full bg-white/70 px-2 py-0.5 text-[11px] font-bold text-navy-600">{stageOrders.length}</span>
+                  </div>
+                  <div onDragOver={(e) => { e.preventDefault(); setDragOverStage(stage); }} onDragLeave={() => setDragOverStage(prev => prev === stage ? null : prev)} onDrop={(e) => { e.preventDefault(); handleDrop(stage); }} className={'flex min-h-[200px] flex-1 flex-col gap-2.5 rounded-b-xl border border-t-0 p-2.5 transition-colors ' + c.border + ' ' + (isOver ? 'drag-over' : 'bg-navy-50/40')}>
+                    {stageOrders.length === 0 ? (
+                      <div className="flex flex-1 items-center justify-center py-8 text-center"><p className="text-xs text-navy-400">No orders</p></div>
+                    ) : (
+                      stageOrders.map(o => {
+                        const customer = getCustomer(o.customer_id); const due = getDueInfo(o.delivery_date, o.stage); const bal = o.price - o.advance;
+                        const borderLeft = { overdue:'border-l-red-500', today:'border-l-amber-500', soon:'border-l-orange-400', future:'border-l-navy-300', done:'border-l-emerald-500' };
+                        return (
+                          <div key={o.id} draggable onDragStart={(e) => { e.dataTransfer.setData('text/plain', String(o.id)); e.dataTransfer.effectAllowed = 'move'; setDraggedId(o.id); }} onDragEnd={() => { setDraggedId(null); setDragOverStage(null); }} onClick={() => onNav({ name:'order', params:{ id:o.id } })} className={'cursor-pointer rounded-xl border border-navy-200 bg-white p-3.5 shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-card border-l-4 ' + borderLeft[due.severity] + ' ' + (draggedId === o.id ? 'dragging' : '')}>
+                            <div className="flex items-center justify-between"><span className="text-[11px] font-bold tracking-wider text-navy-400">{o.order_code}</span><DueBadge due={due} /></div>
+                            <p className="mt-2 truncate text-sm font-semibold text-navy-900">{(customer && customer.name) || 'Unknown'}</p>
+                            <p className="truncate text-xs text-navy-500">{o.garment}{o.fabric ? ' · ' + o.fabric : ''}</p>
+                            <div className="mt-3 flex items-center justify-between text-xs">
+                              <span className="flex items-center gap-1 text-navy-500"><Icon name="Calendar" size={12} /> {formatDate(o.delivery_date)}</span>
+                              <span className={'font-semibold ' + (bal > 0 ? 'text-orange-600' : 'text-emerald-600')}>{bal > 0 ? formatCurrency(bal) : 'Paid'}</span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OrderDetailPage({ customers, orders, onUpdateOrder, onMoveStage, onDeleteOrder, onNav, toast, orderId }) {
+  const order = orders.find(o => o.id === orderId);
+  const [editOpen, setEditOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [saving, setSaving] = useState(false);
+  if (!order) return <EmptyState icon="AlertTriangle" title="Order not found" action={<button onClick={() => onNav({ name:'orders' })} className="btn-primary btn-sm">Back</button>} />;
+  const customer = customers.find(c => c.id === order.customer_id);
+  const due = getDueInfo(order.delivery_date, order.stage);
+  const bal = order.price - order.advance;
+  const currentIdx = STAGES.indexOf(order.stage);
+  const nextStage = STAGES[currentIdx + 1];
+  const filledMeasurements = Object.entries((customer && customer.measurements) || {}).filter(([,v]) => v !== '' && v != null);
+  const paidPct = order.price > 0 ? Math.round((order.advance / order.price) * 100) : 0;
+  const moveStage = async (stage) => { try { await onMoveStage(order.id, stage); toast.success(order.order_code + ' moved to ' + stage + '.'); } catch (err) { toast.error(err.message); } };
+  const handleEdit = async (data) => { setSaving(true); try { await onUpdateOrder(order.id, Object.assign({}, data, { customer_id: Number(data.customer_id) })); toast.success('Order updated.'); setEditOpen(false); } catch (err) { toast.error(err.message); } finally { setSaving(false); } };
+  const handleDelete = async () => { try { await onDeleteOrder(order.id); toast.success('Order deleted.'); onNav({ name:'orders' }); } catch (err) { toast.error(err.message); } };
+  const waMessage = (order.stage === 'Ready' || order.stage === 'Delivered')
+    ? 'Hello ' + (customer && customer.name) + ', your order ' + order.order_code + ' is ready for pickup. Pending amount: ₹' + bal + '. Thank you!'
+    : 'Hello ' + (customer && customer.name) + ', your tailoring order ' + order.order_code + ' has been received. Delivery date: ' + formatDate(order.delivery_date) + '.';
+  return (
+    <div className="mx-auto max-w-4xl space-y-5">
+      <button onClick={() => onNav({ name:'orders' })} className="btn-ghost btn-sm -ml-2"><Icon name="ArrowLeft" size={15} /> Back to Board</button>
+      <div className="card">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div className="flex flex-wrap items-center gap-2"><h2 className="text-xl font-bold text-navy-900">{order.order_code}</h2><StatusBadge stage={order.stage} /><DueBadge due={due} /></div>
+            <button onClick={() => onNav({ name:'customer', params:{ id:order.customer_id } })} className="mt-2 flex items-center gap-1.5 text-sm text-navy-600 hover:text-gold-600">{(customer && customer.name) || 'Unknown'} <Icon name="ChevronRight" size={14} /></button>
+            <p className="text-xs text-navy-400">Created {formatDateTime(order.created_at)}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a href={buildWhatsAppLink(customer && customer.phone, waMessage)} target="_blank" rel="noreferrer" className="btn-outline btn-sm"><Icon name="MessageCircle" size={15} /> WhatsApp</a>
+            <button onClick={() => onNav({ name:'order-slip', params:{ id:order.id } })} className="btn-outline btn-sm"><Icon name="Printer" size={15} /> Print Slip</button>
+            <button onClick={() => setEditOpen(true)} className="btn-outline btn-sm"><Icon name="Pencil" size={14} /> Edit</button>
+          </div>
+        </div>
+      </div>
+      <div className="card">
+        <h3 className="text-sm font-semibold text-navy-800">Order Progress</h3>
+        <div className="mt-5 flex items-center">
+          {STAGES.map((stage, i) => {
+            const done = i < currentIdx; const active = i === currentIdx;
+            return (
+              <Fragment key={stage}>
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className={'flex h-8 w-8 items-center justify-center rounded-full border-2 transition-colors ' + (done ? 'border-emerald-500 bg-emerald-500 text-white' : active ? 'border-gold-500 bg-gold-50 text-gold-600' : 'border-navy-200 bg-white text-navy-300')}>
+                    {done ? <Icon name="Check" size={14} strokeWidth={3} /> : active ? <Icon name="Dot" size={20} strokeWidth={4} /> : <Icon name="Circle" size={8} />}
+                  </div>
+                  <span className={'whitespace-nowrap text-[10px] font-semibold sm:text-[11px] ' + (done ? 'text-emerald-600' : active ? 'text-gold-600' : 'text-navy-400')}>{stage}</span>
+                </div>
+                {i < STAGES.length - 1 && <div className={'mx-1 h-0.5 flex-1 rounded sm:mx-2 ' + (done ? 'bg-emerald-400' : 'bg-navy-200')} />}
+              </Fragment>
+            );
+          })}
+        </div>
+        <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-navy-100 pt-4">
+          {nextStage && <button onClick={() => moveStage(nextStage)} className="btn-gold btn-sm"><Icon name="Check" size={14} /> Move to {nextStage}</button>}
+          {order.stage === 'Delivered' && <span className="badge bg-emerald-50 text-emerald-700 border-emerald-200"><Icon name="Check" size={13} /> Delivered</span>}
+          <div className="ml-auto flex flex-wrap gap-1">
+            {STAGES.filter(s => s !== order.stage).map(s => <button key={s} onClick={() => moveStage(s)} className="btn-ghost btn-sm text-xs">{s}</button>)}
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-5 lg:grid-cols-3">
+        <div className="card lg:col-span-2">
+          <h3 className="text-sm font-semibold text-navy-800">Order Details</h3>
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div><p className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-navy-400"><Icon name="Shirt" size={11} /> Garment</p><p className="mt-1 text-sm font-semibold text-navy-800">{order.garment}</p></div>
+            <div><p className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-navy-400"><Icon name="FileText" size={11} /> Fabric</p><p className="mt-1 text-sm font-semibold text-navy-800">{order.fabric || '—'}</p></div>
+            <div><p className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-navy-400"><Icon name="Calendar" size={11} /> Delivery</p><p className="mt-1 text-sm font-semibold text-navy-800">{formatDate(order.delivery_date)}</p></div>
+            <div><p className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-navy-400"><Icon name="Phone" size={11} /> Phone</p><p className="mt-1 text-sm font-semibold text-navy-800">{(customer && customer.phone) || '—'}</p></div>
+            <div><p className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-navy-400"><Icon name="IndianRupee" size={11} /> Total</p><p className="mt-1 text-sm font-semibold text-navy-800">{formatCurrency(order.price)}</p></div>
+            <div><p className="text-[11px] font-medium uppercase tracking-wide text-navy-400">Advance</p><p className="mt-1 text-sm font-semibold text-emerald-700">{formatCurrency(order.advance)}</p></div>
+          </div>
+          {order.notes && <div className="mt-5 rounded-lg border border-gold-200/70 bg-gold-50 px-4 py-3"><p className="text-[11px] font-semibold uppercase tracking-wide text-gold-600">Notes</p><p className="mt-1 text-sm text-gold-800">{order.notes}</p></div>}
+        </div>
+        <div className="card">
+          <div className="flex items-center justify-between"><h3 className="text-sm font-semibold text-navy-800">Payment</h3><span className={'badge ' + (bal > 0 ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200')}>{bal > 0 ? 'Pending' : 'Paid'}</span></div>
+          <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-lg bg-navy-50 p-3"><p className="text-[10px] font-semibold uppercase tracking-wider text-navy-400">Total</p><p className="mt-1 text-base font-bold text-navy-900">₹{order.price}</p></div>
+            <div className="rounded-lg bg-emerald-50 p-3"><p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600">Advance</p><p className="mt-1 text-base font-bold text-emerald-700">₹{order.advance}</p></div>
+            <div className={'rounded-lg p-3 ' + (bal > 0 ? 'bg-orange-50' : 'bg-emerald-50')}><p className={'text-[10px] font-semibold uppercase tracking-wider ' + (bal > 0 ? 'text-orange-600' : 'text-emerald-600')}>Balance</p><p className={'mt-1 text-base font-bold ' + (bal > 0 ? 'text-orange-700' : 'text-emerald-700')}>₹{bal}</p></div>
+          </div>
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-xs text-navy-500"><span>Payment progress</span><span className="font-semibold">{paidPct}% paid</span></div>
+            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-navy-100"><div className={'h-full rounded-full transition-all duration-500 ' + (paidPct === 100 ? 'bg-emerald-500' : 'bg-gold-500')} style={{ width: paidPct + '%' }} /></div>
+          </div>
+        </div>
+      </div>
+      {filledMeasurements.length > 0 && (
+        <div className="card">
+          <h3 className="text-sm font-semibold text-navy-800">Measurements on File</h3>
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {filledMeasurements.map(([key, val]) => {
+              const field = MEASUREMENT_FIELDS.find(f => f.key === key);
+              return (<div key={key} className="rounded-lg border border-navy-100 bg-navy-50/40 px-3.5 py-2.5"><p className="text-[11px] font-medium uppercase tracking-wide text-navy-400">{field ? field.label : key.replace(/_/g,' ')}</p><p className="mt-0.5 text-sm font-bold text-navy-800">{val} <span className="text-xs font-normal text-navy-400">in</span></p></div>);
+            })}
+          </div>
+        </div>
+      )}
+      <div className="card border-red-200 bg-red-50/30">
+        <h3 className="text-sm font-semibold text-red-700">Danger Zone</h3>
+        <p className="mt-1 text-xs text-red-600">Deleting an order permanently removes it.</p>
+        <button onClick={() => setConfirmDelete(true)} className="btn-danger btn-sm mt-3">Delete Order</button>
+      </div>
+      <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit Order" size="lg">
+        <OrderForm customers={customers} initial={Object.assign({}, order, { customer_id: order.customer_id })} onSubmit={handleEdit} onCancel={() => setEditOpen(false)} loading={saving} />
+      </Modal>
+      <ConfirmDialog open={confirmDelete} onClose={() => setConfirmDelete(false)} onConfirm={handleDelete} title="Delete this order?" message={'Order ' + order.order_code + ' will be permanently deleted.'} />
+    </div>
+  );
+}
+
+function OrderSlipPage({ customers, orders, onNav, orderId }) {
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return <EmptyState icon="AlertTriangle" title="Order not found" />;
+  const customer = customers.find(c => c.id === order.customer_id);
+  const filledMeasurements = Object.entries((customer && customer.measurements) || {}).filter(([,v]) => v !== '' && v != null);
+  const bal = order.price - order.advance;
+  return (
+    <div className="space-y-5">
+      <div className="no-print flex flex-wrap items-center justify-between gap-2">
+        <button onClick={() => onNav({ name:'order', params:{ id:order.id } })} className="btn-ghost btn-sm -ml-2"><Icon name="ArrowLeft" size={15} /> Back</button>
+        <button onClick={() => window.print()} className="btn-primary btn-sm"><Icon name="Printer" size={15} /> Print / Save as PDF</button>
+      </div>
+      <div className="mx-auto max-w-lg">
+        <div className="print-area rounded-xl border border-navy-200 bg-white p-6 shadow-card">
+          <div className="flex items-center justify-between border-b-2 border-navy-900 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-navy-900"><Icon name="Scissors" size={24} className="text-gold-400" /></div>
+              <div><h1 className="text-lg font-bold tracking-tight text-navy-900">Tailor Order Manager</h1><p className="text-[11px] text-navy-500">Perfect Fit Tailors · Since 2010</p></div>
+            </div>
+            <div className="text-right text-[10px] leading-tight text-navy-500"><p>123 Main Road, Bengaluru</p><p>+91 98765 43210</p></div>
+          </div>
+          <div className="mt-4 flex justify-between text-xs">
+            <div><p className="text-base font-bold text-navy-900">{order.order_code}</p><p className="mt-1 text-navy-500">Order Date: {formatDate(order.created_at)}</p></div>
+            <div className="text-right"><p className="font-medium text-navy-700">Delivery Date</p><p className="mt-0.5 font-bold text-navy-900">{formatDate(order.delivery_date)}</p><p className="mt-1 text-navy-500">Stage: {order.stage}</p></div>
+          </div>
+          <div className="mt-4 rounded-lg bg-navy-50 px-4 py-3"><p className="text-[10px] font-semibold uppercase tracking-wider text-navy-400">Customer</p><p className="mt-0.5 text-sm font-bold text-navy-900">{(customer && customer.name) || '—'}</p><p className="text-xs text-navy-600">{(customer && customer.phone) || '—'}</p></div>
+          <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+            <div className="rounded-lg border border-navy-200 px-3.5 py-2.5"><p className="text-[10px] font-semibold uppercase tracking-wide text-navy-400">Garment</p><p className="mt-0.5 font-bold text-navy-900">{order.garment}</p></div>
+            <div className="rounded-lg border border-navy-200 px-3.5 py-2.5"><p className="text-[10px] font-semibold uppercase tracking-wide text-navy-400">Fabric</p><p className="mt-0.5 font-bold text-navy-900">{order.fabric || 'Standard'}</p></div>
+          </div>
+          {filledMeasurements.length > 0 && (
+            <div className="mt-4">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-navy-400">Measurements (inches)</p>
+              <div className="mt-2 grid grid-cols-3 gap-x-4 gap-y-2">
+                {filledMeasurements.map(([key, val]) => {
+                  const field = MEASUREMENT_FIELDS.find(f => f.key === key);
+                  return (<div key={key} className="flex items-baseline justify-between border-b border-dotted border-navy-200 pb-1 text-xs"><span className="text-navy-500">{field ? field.label : key}</span><span className="font-bold text-navy-900">{val}"</span></div>);
+                })}
+              </div>
+            </div>
+          )}
+          <div className="mt-5 rounded-lg border-2 border-navy-900 p-4">
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div><p className="text-[10px] font-semibold uppercase tracking-wide text-navy-400">Total</p><p className="mt-1 text-base font-bold text-navy-900">{formatCurrency(order.price)}</p></div>
+              <div><p className="text-[10px] font-semibold uppercase tracking-wide text-navy-400">Advance</p><p className="mt-1 text-base font-bold text-emerald-700">{formatCurrency(order.advance)}</p></div>
+              <div><p className="text-[10px] font-semibold uppercase tracking-wide text-navy-400">Balance</p><p className={'mt-1 text-base font-bold ' + (bal > 0 ? 'text-orange-600' : 'text-emerald-700')}>{formatCurrency(bal)}</p></div>
+            </div>
+          </div>
+          {order.notes && <div className="mt-4 text-xs"><p className="text-[10px] font-semibold uppercase tracking-wider text-navy-400">Notes</p><p className="mt-1 text-navy-700">{order.notes}</p></div>}
+          <div className="mt-6 flex items-end justify-between border-t border-navy-200 pt-4">
+            <div className="text-[10px] leading-relaxed text-navy-400"><p>Thank you for your business!</p><p>Please bring this slip when collecting.</p></div>
+            <div className="flex h-14 w-14 items-center justify-center rounded border border-navy-300 bg-white text-[8px] text-navy-400">QR</div>
+          </div>
+          <p className="mt-3 text-center text-[9px] text-navy-300">Printed on {formatDateTime(new Date().toISOString())}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PendingPaymentsPage({ customers, orders, onNav, toast }) {
+  const pending = useMemo(() => orders.filter(o => o.stage !== 'Delivered' && o.price - o.advance > 0).sort((a,b) => a.delivery_date.localeCompare(b.delivery_date)), [orders]);
+  const totalPending = pending.reduce((s,o) => s + (o.price - o.advance), 0);
+  const getCustomer = (id) => customers.find(c => c.id === id);
+  return (
+    <div className="space-y-5">
+      <div><h2 className="text-lg font-bold text-navy-900">Pending Payments</h2><p className="text-sm text-navy-500">Track and collect outstanding balances.</p></div>
+      <div className="card border-navy-800 bg-gradient-to-br from-navy-900 to-navy-800">
+        <div className="flex items-center justify-between">
+          <div><p className="text-[11px] font-semibold uppercase tracking-wider text-navy-400">Total Pending Amount</p><p className="mt-2 text-3xl font-bold tracking-tight text-gold-400">{formatCurrency(totalPending)}</p><p className="mt-1 text-xs text-navy-400">Across {pending.length} order{pending.length !== 1 ? 's' : ''}</p></div>
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-500/30"><Icon name="Wallet" size={26} /></div>
+        </div>
+      </div>
+      {pending.length === 0 ? (
+        <EmptyState icon="IndianRupee" title="All payments collected" description="No pending balances right now." />
+      ) : (
+        <div className="space-y-2.5">
+          {pending.map(o => {
+            const c = getCustomer(o.customer_id); const balance = o.price - o.advance;
+            const msg = 'Hi ' + (c && c.name) + ', your stitching order ' + o.order_code + ' is ready. Pending amount: ₹' + balance + '. Thank you!';
+            return (
+              <div key={o.id} className="card flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <button onClick={() => onNav({ name:'order', params:{ id:o.id } })} className="flex flex-1 items-center gap-3 text-left min-w-0">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-600"><Icon name="IndianRupee" size={18} /></div>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2"><span className="text-xs font-bold text-navy-500">{o.order_code}</span><StatusBadge stage={o.stage} /></div>
+                    <p className="mt-0.5 truncate text-sm font-semibold text-navy-900">{(c && c.name) || 'Unknown'}</p>
+                    <p className="text-xs text-navy-400">{o.garment} · Delivers {formatDate(o.delivery_date)}</p>
+                  </div>
+                </button>
+                <div className="flex items-center justify-between gap-3 sm:justify-end">
+                  <div className="text-right"><p className="text-xs text-navy-400">Balance</p><p className="text-lg font-bold text-orange-600">{formatCurrency(balance)}</p><p className="text-[11px] text-navy-400">of {formatCurrency(o.price)}</p></div>
+                  <a href={buildWhatsAppLink(c && c.phone, msg)} target="_blank" rel="noreferrer" onClick={() => toast.success('WhatsApp opened for ' + (c && c.name) + '.')} className="btn-gold btn-sm shrink-0"><Icon name="MessageCircle" size={14} /> Remind</a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SettingsPage({ user, shopName, onLogout }) {
+  return (
+    <div className="mx-auto max-w-2xl space-y-5">
+      <div><h2 className="text-lg font-bold text-navy-900">Settings & Profile</h2><p className="text-sm text-navy-500">Manage your account.</p></div>
+      <div className="card">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-navy-900 text-xl font-bold text-gold-400">{initials(shopName || (user && user.email) || 'U')}</div>
+          <div>
+            <h3 className="text-base font-bold text-navy-900">{shopName || 'My Shop'}</h3>
+            <p className="flex items-center gap-1.5 text-sm text-navy-500"><Icon name="Mail" size={13} /> {user && user.email}</p>
+            <span className="badge mt-1.5 bg-gold-100 text-gold-700 border-gold-200"><Icon name="Crown" size={11} /> Account Owner</span>
+          </div>
+        </div>
+      </div>
+      <div className="card">
+        <h3 className="text-sm font-semibold text-navy-800">Appearance</h3>
+        <p className="mt-1 text-xs text-navy-500">Pick from 10 themes — switch instantly, saved to your device.</p>
+        <div className="mt-3"><ThemeSwitcher /></div>
+      </div>
+      <div className="card">
+        <h3 className="text-sm font-semibold text-navy-800">About</h3>
+        <div className="mt-4 flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-navy-900"><Icon name="Scissors" size={20} className="text-gold-400" /></div>
+          <div><p className="text-sm font-semibold text-navy-800">Tailor Order Manager</p><p className="text-xs text-navy-400">Version 2.0 · Supabase Edition</p></div>
+        </div>
+      </div>
+      <div className="card">
+        <h3 className="text-sm font-semibold text-navy-800">Account</h3>
+        <button onClick={onLogout} className="btn-outline btn-sm mt-3 text-red-600 hover:bg-red-50 hover:border-red-300"><Icon name="LogOut" size={15} /> Sign Out</button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   MAIN APP
+   ============================================================ */
+function App() {
+  const [user, setUser] = useState(null);
+  const [shopName, setShopName] = useState('');
+  const [authLoading, setAuthLoading] = useState(true);
+  const [customers, setCustomers] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [dataLoading, setDataLoading] = useState(false);
+  const [route, setRoute] = useState({ name:'landing', params:{} });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [toasts, setToasts] = useState([]);
+  const [routeParams, setRouteParams] = useState({});
+  const [publicView, setPublicView] = useState('landing'); // 'landing' | 'admin' | 'shop'
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminUser, setAdminUser] = useState('');
+  const [admins, setAdmins] = useState([]);
+  const [adminLoading, setAdminLoading] = useState(false);
+
+  const addToast = useCallback((message, type = 'success') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4200);
+  }, []);
+  const removeToast = useCallback((id) => setToasts(prev => prev.filter(t => t.id !== id)), []);
+  const toast = useMemo(() => ({ success: (m) => addToast(m, 'success'), error: (m) => addToast(m, 'error'), info: (m) => addToast(m, 'info') }), [addToast]);
+
+  /* Auth */
+  useEffect(() => {
+    if (!supabase) { setAuthLoading(false); return; }
+    let mounted = true;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      setUser(session ? session.user : null);
+      setShopName(session && session.user && session.user.user_metadata ? session.user.user_metadata.shop_name || '' : '');
+      setAuthLoading(false);
+    }).catch(() => setAuthLoading(false));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session ? session.user : null);
+      setShopName(session && session.user && session.user.user_metadata ? session.user.user_metadata.shop_name || '' : '');
+      if (!session) { setCustomers([]); setOrders([]); }
+    });
+    return () => { mounted = false; subscription.unsubscribe(); };
+  }, []);
+
+  /* Load shop data + realtime */
+  useEffect(() => {
+    if (!user || !supabase || isAdmin) return;
+    let active = true;
+    setDataLoading(true);
+    (async () => {
+      try {
+        const [cRes, oRes] = await Promise.all([
+          supabase.from('customers').select('*').order('created_at', { ascending: false }),
+          supabase.from('orders').select('*').order('delivery_date', { ascending: true }),
+        ]);
+        if (!active) return;
+        if (cRes.error) toast.error('Load failed: ' + cRes.error.message); else setCustomers(cRes.data || []);
+        if (oRes.error) toast.error('Load failed: ' + oRes.error.message); else setOrders(oRes.data || []);
+      } catch (e) { toast.error('Load failed: ' + e.message); }
+      finally { if (active) setDataLoading(false); }
+    })();
+    const channel = supabase.channel('tailor-realtime')
+      .on('postgres_changes', { event:'*', schema:'public', table:'customers' }, (payload) => {
+        setCustomers(prev => {
+          if (payload.eventType === 'INSERT') return [payload.new].concat(prev);
+          if (payload.eventType === 'UPDATE') return prev.map(c => c.id === payload.new.id ? payload.new : c);
+          if (payload.eventType === 'DELETE') return prev.filter(c => c.id !== payload.old.id);
+          return prev;
+        });
+      })
+      .on('postgres_changes', { event:'*', schema:'public', table:'orders' }, (payload) => {
+        setOrders(prev => {
+          if (payload.eventType === 'INSERT') return [payload.new].concat(prev);
+          if (payload.eventType === 'UPDATE') return prev.map(o => o.id === payload.new.id ? payload.new : o);
+          if (payload.eventType === 'DELETE') return prev.filter(o => o.id !== payload.old.id);
+          return prev;
+        });
+      })
+      .subscribe();
+    return () => { active = false; try { supabase.removeChannel(channel); } catch (e) {} };
+  }, [user, toast, isAdmin]);
+
+  /* Load admins when in admin mode */
+  const loadAdmins = useCallback(async () => {
+    if (!supabase) return;
+    setAdminLoading(true);
+    try {
+      const { data, error } = await supabase.from('platform_admins').select('*').order('created_at', { ascending: true });
+      if (error) throw error;
+      // Always include the hardcoded root admin as a special entry
+      const rootAdmin = { id: 'root', username: 'admin', created_at: null, isDefault: true };
+      const extras = (data || []).filter(a => a.username !== 'admin').map(a => Object.assign({}, a, { isDefault: false }));
+      setAdmins([rootAdmin, ...extras]);
+    } catch (err) {
+      toast.error('Failed to load admins: ' + err.message);
+      setAdmins([{ id: 'root', username: 'admin', isDefault: true }]);
+    } finally { setAdminLoading(false); }
+  }, [toast]);
+
+  useEffect(() => {
+    if (isAdmin) loadAdmins();
+  }, [isAdmin, loadAdmins]);
+
+  /* Realtime for admins */
+  useEffect(() => {
+    if (!isAdmin || !supabase) return;
+    const channel = supabase.channel('admins-realtime')
+      .on('postgres_changes', { event:'*', schema:'public', table:'platform_admins' }, () => loadAdmins())
+      .subscribe();
+    return () => { try { supabase.removeChannel(channel); } catch (e) {} };
+  }, [isAdmin, loadAdmins]);
+
+  /* Admin auth */
+  const handleAdminLogin = async (username, password) => {
+    const clean = String(username).trim().toLowerCase();
+    // Check hardcoded root admin
+    if (clean === 'admin' && password === '123') {
+      setIsAdmin(true); setAdminUser('admin');
+      toast.success('Welcome, admin.');
+      return;
+    }
+    // Check platform_admins table
+    if (!supabase) throw new Error('Supabase not configured.');
+    const { data, error } = await supabase.from('platform_admins').select('*').eq('username', clean).eq('password', password).limit(1);
+    if (error) throw new Error(error.message);
+    if (!data || data.length === 0) throw new Error('Invalid username or password.');
+    setIsAdmin(true); setAdminUser(clean);
+    toast.success('Welcome, ' + clean + '.');
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdmin(false); setAdminUser(''); setAdmins([]);
+    setPublicView('landing');
+    toast.info('Signed out of admin portal.');
+  };
+
+  const handleAddAdmin = async (username, password) => {
+    if (!supabase) throw new Error('Supabase not configured.');
+    const clean = username.trim().toLowerCase();
+    if (clean === 'admin') throw new Error('"admin" is reserved for the root account.');
+    const { error } = await supabase.from('platform_admins').insert({ username: clean, password });
+    if (error) {
+      if (error.code === '23505') throw new Error('That username is already taken.');
+      throw error;
+    }
+    await loadAdmins();
+  };
+
+  const handleDeleteAdmin = async (id) => {
+    if (!supabase) throw new Error('Supabase not configured.');
+    const { error } = await supabase.from('platform_admins').delete().eq('id', id);
+    if (error) throw error;
+    await loadAdmins();
+  };
+
+  /* Shop auth */
+  const handleLogin = async (email, password) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    toast.success('Welcome back!');
+    setPublicView('shop');
+  };
+
+  const handleSignup = async (email, password, shop) => {
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { shop_name: shop } } });
+    if (error) throw error;
+    if (data && data.user && !data.session) toast.info('Check your email to confirm your account.');
+    else if (data && data.session) { toast.success('Account created — welcome!'); setPublicView('shop'); }
+  };
+
+  const handleLogout = async () => {
+    try { await supabase.auth.signOut(); } catch (e) {}
+    setRoute({ name:'dashboard', params:{} });
+    setPublicView('landing');
+  };
+
+  /* CRUD */
+  const createCustomer = async (data) => {
+    const { data: row, error } = await supabase.from('customers').insert({ name: data.name, phone: data.phone, measurements: {}, user_id: user.id }).select().single();
+    if (error) throw error;
+    return row;
+  };
+  const updateCustomer = async (id, data) => {
+    const payload = Object.assign({}, data, { updated_at: new Date().toISOString() });
+    const { error } = await supabase.from('customers').update(payload).eq('id', id);
+    if (error) throw error;
+  };
+  const deleteCustomer = async (id) => {
+    const { error } = await supabase.from('customers').delete().eq('id', id);
+    if (error) throw error;
+  };
+  const createOrder = async (data, existingOrders) => {
+    const nums = existingOrders.map(o => parseInt((o.order_code || 'ORD-1000').replace('ORD-', ''), 10)).filter(n => !isNaN(n));
+    const next = (nums.length ? Math.max.apply(null, nums) : 1000) + 1;
+    const { data: row, error } = await supabase.from('orders').insert({
+      order_code: 'ORD-' + next, customer_id: Number(data.customer_id), user_id: user.id,
+      garment: data.garment, fabric: data.fabric || '', price: Number(data.price),
+      advance: Number(data.advance) || 0, delivery_date: data.delivery_date, stage: 'Received', notes: data.notes || '',
+    }).select().single();
+    if (error) throw error;
+    return row;
+  };
+  const updateOrder = async (id, data) => {
+    const { error } = await supabase.from('orders').update(Object.assign({}, data, { updated_at: new Date().toISOString() })).eq('id', id);
+    if (error) throw error;
+  };
+  const moveOrderStage = async (id, stage) => {
+    const { error } = await supabase.from('orders').update({ stage, updated_at: new Date().toISOString() }).eq('id', id);
+    if (error) throw error;
+  };
+  const deleteOrder = async (id) => {
+    const { error } = await supabase.from('orders').delete().eq('id', id);
+    if (error) throw error;
+  };
+
+  const navigate = useCallback((r) => {
+    if (typeof r === 'string') setRoute({ name:r, params:{} });
+    else { const params = r.params; const rest = Object.assign({}, r); delete rest.params; setRoute(rest); setRouteParams(params || {}); }
+    setSidebarOpen(false);
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }, []);
+
+  /* Routing */
+  if (!supabase) return <SetupScreen error={supabaseInitError} />;
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-navy-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-900"><Icon name="Scissors" size={26} className="text-gold-400" /></div>
+          <div className="spinner" />
+        </div>
+      </div>
+    );
+  }
+
+  const toastStack = (
+    <div className="fixed bottom-4 right-4 z-[100] flex w-[calc(100%-2rem)] flex-col gap-2 no-print sm:w-96">
+      {toasts.map(t => <Toast key={t.id} toast={t} onClose={() => removeToast(t.id)} />)}
+    </div>
+  );
+
+  /* Admin mode */
+  if (isAdmin) {
+    return (
+      <Fragment>
+        <AdminDashboardPage
+          adminUser={adminUser}
+          admins={admins}
+          onAdd={handleAddAdmin}
+          onDelete={handleDeleteAdmin}
+          onLogout={handleAdminLogout}
+          adminLoading={adminLoading}
+          toast={toast}
+        />
+        {toastStack}
+      </Fragment>
+    );
+  }
+
+  /* Public (not logged in) */
+  if (!user) {
+    if (publicView === 'landing') {
+      return (
+        <Fragment>
+          <LandingPage onChooseAdmin={() => setPublicView('admin')} onChooseShop={() => setPublicView('shop')} />
+          {toastStack}
+        </Fragment>
+      );
+    }
+    if (publicView === 'admin') {
+      return (
+        <Fragment>
+          <PortalChoice mode="admin" onBack={() => setPublicView('landing')} onLogin={handleAdminLogin} onSignup={() => {}} loading={false} />
+          {toastStack}
+        </Fragment>
+      );
+    }
+    return (
+      <Fragment>
+        <PortalChoice mode="shop" onBack={() => setPublicView('landing')} onLogin={handleLogin} onSignup={handleSignup} loading={false} />
+        {toastStack}
+      </Fragment>
+    );
+  }
+
+  /* Shop dashboard */
+  const titleMap = { dashboard:'Dashboard', customers:'Customers', customer:'Customer Profile', measurements:'Measurements', orders:'Orders Board', 'order-new':'New Order', order:'Order Details', 'order-slip':'Order Slip', payments:'Pending Payments', settings:'Settings' };
+
+  const renderPage = () => {
+    if (dataLoading) return <LoadingSpinner label="Loading your data…" />;
+    switch (route.name) {
+      case 'dashboard': return <DashboardPage customers={customers} orders={orders} onNav={navigate} />;
+      case 'customers': return <CustomersPage customers={customers} orders={orders} onCreate={createCustomer} onUpdate={updateCustomer} onDelete={deleteCustomer} onNav={navigate} toast={toast} routeParams={routeParams} clearParams={() => setRouteParams({})} />;
+      case 'customer': return <CustomerDetailPage customers={customers} orders={orders} onUpdate={updateCustomer} onDelete={deleteCustomer} onNav={navigate} toast={toast} customerId={Number(routeParams.id)} />;
+      case 'measurements': return <MeasurementsPage customers={customers} onUpdate={updateCustomer} onNav={navigate} toast={toast} customerId={Number(routeParams.id)} />;
+      case 'orders': return <OrdersBoardPage customers={customers} orders={orders} onMoveStage={moveOrderStage} onNav={navigate} toast={toast} routeParams={routeParams} />;
+      case 'order-new': return <NewOrderPage customers={customers} orders={orders} onCreateOrder={createOrder} onNav={navigate} toast={toast} routeParams={routeParams} />;
+      case 'order': return <OrderDetailPage customers={customers} orders={orders} onUpdateOrder={updateOrder} onMoveStage={moveOrderStage} onDeleteOrder={deleteOrder} onNav={navigate} toast={toast} orderId={Number(routeParams.id)} />;
+      case 'order-slip': return <OrderSlipPage customers={customers} orders={orders} onNav={navigate} orderId={Number(routeParams.id)} />;
+      case 'payments': return <PendingPaymentsPage customers={customers} orders={orders} onNav={navigate} toast={toast} />;
+      case 'settings': return <SettingsPage user={user} shopName={shopName} onLogout={handleLogout} />;
+      default: return <DashboardPage customers={customers} orders={orders} onNav={navigate} />;
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen bg-navy-50">
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} shopName={shopName} onLogout={handleLogout} route={route} onNav={navigate} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Topbar onMenuClick={() => setSidebarOpen(true)} title={titleMap[route.name] || 'Tailor Order Manager'} />
+        <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8">{renderPage()}</main>
+      </div>
+      {toastStack}
+    </div>
+  );
+}
+
+try {
+  const rootEl = document.getElementById('root');
+  if (rootEl) {
+    rootEl.innerHTML = '';
+    ReactDOM.createRoot(rootEl).render(<App />);
+  }
+} catch (e) {
+  document.getElementById('root').innerHTML = '<div style="padding:2rem;font-family:sans-serif;color:#dc2626;"><h2>Mount failed</h2><pre>' + String(e && e.message ? e.message : e) + '</pre></div>';
+}
+</script>
+</body>
+</html>
